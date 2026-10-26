@@ -13,7 +13,7 @@ Comisión: 9
 ## Estructura
 
 ```
-club-deportivo-repo3/
+club-deportivo-backend/
 └── backend/
     ├── migraciones/
     ├── scripts/
