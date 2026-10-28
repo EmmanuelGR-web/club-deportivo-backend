@@ -17,3 +17,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+tsconfig.build.tsbuildinfo
+*.tsbuildinfo
