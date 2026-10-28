@@ -10,53 +10,64 @@ Comisión: 9
 
 - NestJS con base de datos PostgreSQL.
 
+## Cómo correrlo
+
+```bash
+npm install
+npm run start:dev
+```
+
 ## Estructura
 
 ```
 club-deportivo-backend/
-└── backend/
-    ├── migraciones/
-    ├── scripts/
-    └── src/
-        ├── config/
-        ├── comun/
-        │   ├── decoradores/
-        │   ├── enums/
-        │   ├── guards/
-        │   └── utilidades/
-        └── modulos/
-            ├── autenticacion/
-            ├── usuarios/
-            ├── socios/
-            ├── pagos/
-            ├── noticias/
-            ├── disciplinas/
-            ├── eventos/
-            ├── personal/
-            ├── mensajes/
-            ├── registro-cambios/
-            ├── archivos/
-            └── ia/
+├── src/
+│   ├── main.ts
+│   ├── config/
+│   ├── common/
+│   │   ├── decorators/
+│   │   ├── enums/
+│   │   ├── guards/
+│   │   └── utils/
+│   └── modules/
+│       ├── app/
+│       ├── auth/
+│       ├── users/
+│       ├── members/
+│       ├── payments/
+│       ├── news/
+│       ├── disciplines/
+│       ├── events/
+│       ├── staff/
+│       ├── messages/
+│       ├── audit-logs/
+│       ├── files/
+│       └── ai/
+├── test/
+├── nest-cli.json
+├── package.json
+└── tsconfig.json
 ```
+
+Por ahora los módulos son solo carpetas, sin código: cada uno tiene `dto/` y `entities/` donde corresponde. El módulo, el controlador y el servicio de cada uno se agregan cuando se programe.
 
 | Carpeta | Contenido |
 | --- | --- |
-| `migraciones/` | Cambios en la estructura de la base de datos. |
-| `scripts/` | Scripts de carga de datos. |
 | `src/config/` | Configuración de la aplicación y de la base de datos. |
-| `src/comun/` | Decoradores, enums, guards y utilidades compartidos entre módulos. |
-| `src/modulos/autenticacion/` | Inicio de sesión y estrategias de autenticación. |
-| `src/modulos/usuarios/` | Cuentas de usuario y roles. |
-| `src/modulos/socios/` | Alta, datos y estado de los socios. |
-| `src/modulos/pagos/` | Cuotas, pagos y comprobantes. |
-| `src/modulos/noticias/` | Noticias del club. |
-| `src/modulos/disciplinas/` | Disciplinas deportivas. |
-| `src/modulos/eventos/` | Calendario de eventos. |
-| `src/modulos/personal/` | Personal del club y control de jornadas. |
-| `src/modulos/mensajes/` | Mensajería interna entre socios y personal. |
-| `src/modulos/registro-cambios/` | Auditoría de las modificaciones. |
-| `src/modulos/archivos/` | Fotos, documentos de identidad y comprobantes. |
-| `src/modulos/ia/` | Lectura de documentos con Gemini. |
+| `src/common/` | Decoradores, enums, guards y utilidades compartidos entre módulos. |
+| `src/modules/app/` | Módulo raíz que une a todos los demás. |
+| `src/modules/auth/` | Inicio de sesión y estrategias de autenticación. |
+| `src/modules/users/` | Cuentas de usuario y roles. |
+| `src/modules/members/` | Alta, datos y estado de los socios. |
+| `src/modules/payments/` | Cuotas, pagos y comprobantes. |
+| `src/modules/news/` | Noticias del club. |
+| `src/modules/disciplines/` | Disciplinas deportivas. |
+| `src/modules/events/` | Calendario de eventos. |
+| `src/modules/staff/` | Personal del club y control de jornadas. |
+| `src/modules/messages/` | Mensajería interna entre socios y personal. |
+| `src/modules/audit-logs/` | Auditoría de las modificaciones. |
+| `src/modules/files/` | Fotos, documentos de identidad y comprobantes. |
+| `src/modules/ai/` | Lectura de documentos con Gemini. |
 
 ## Repositorios anteriores
 
