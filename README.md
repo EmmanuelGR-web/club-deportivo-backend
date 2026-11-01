@@ -43,7 +43,6 @@ club-deportivo-backend/
 │       ├── audit-logs/
 │       ├── files/
 │       └── ai/
-├── test/
 ├── nest-cli.json
 ├── package.json
 └── tsconfig.json
