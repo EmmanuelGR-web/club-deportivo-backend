@@ -20,3 +20,5 @@ Thumbs.db
 
 tsconfig.build.tsbuildinfo
 *.tsbuildinfo
+
+/src/generated/prisma
