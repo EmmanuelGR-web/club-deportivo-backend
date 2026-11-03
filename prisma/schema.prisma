@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Rol {
+  admin
+  personal
+  socio
+}
+
+enum EstadoSocio {
+  activo
+  moroso
+  baja
+}
+
+enum EstadoPago {
+  pagado
+  pendiente
+  vencido
+}
+
+model Discipline {
+  id           Int      @id @default(autoincrement())
+  nombre       String   @unique
+  descripcion  String?
+  cuotaMensual Decimal  @db.Decimal(10, 2)
+  members      Member[]
+  events       Event[]
+  staff        Staff[]
+
+  @@map("disciplines")
+}
+
+model User {
+  id                Int        @id @default(autoincrement())
+  nombre            String
+  email             String     @unique
+  contrasena        String
+  rol               Rol        @default(socio)
+  bloqueado         Boolean    @default(false)
+  creadoEn          DateTime   @default(now())
+  member            Member?
+  staff             Staff?
+  news              News[]
+  mensajesEnviados  Message[]  @relation("MensajesEnviados")
+  mensajesRecibidos Message[]  @relation("MensajesRecibidos")
+  auditLogs         AuditLog[]
+  files             File[]
+
+  @@map("users")
+}
+
+model Member {
+  id           Int         @id @default(autoincrement())
+  numeroSocio  Int         @unique
+  nombre       String
+  dni          String      @unique
+  email        String
+  categoria    String
+  estado       EstadoSocio @default(activo)
+  medioPago    String
+  fechaAlta    DateTime    @default(now()) @db.Date
+  userId       Int?        @unique
+  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  disciplineId Int
+  discipline   Discipline  @relation(fields: [disciplineId], references: [id], onDelete: Restrict)
+  payments     Payment[]
+
+  @@map("members")
+}
+
+model Payment {
+  id          Int        @id @default(autoincrement())
+  concepto    String
+  monto       Decimal    @db.Decimal(10, 2)
+  fecha       DateTime   @db.Date
+  medio       String
+  estado      EstadoPago @default(pendiente)
+  recargo     Decimal    @default(0) @db.Decimal(10, 2)
+  comprobante String?
+  memberId    Int
+  member      Member     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model News {
+  id        Int      @id @default(autoincrement())
+  titulo    String
+  resumen   String
+  cuerpo    String   @db.Text
+  categoria String
+  imagen    String?
+  fecha     DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@map("news")
+}
+
+model Event {
+  id           Int        @id @default(autoincrement())
+  titulo       String
+  descripcion  String?
+  fecha        DateTime
+  lugar        String
+  disciplineId Int
+  discipline   Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
+
+  @@map("events")
+}
+
+model Staff {
+  id           Int         @id @default(autoincrement())
+  nombre       String
+  cargo        String
+  telefono     String?
+  userId       Int?        @unique
+  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  disciplineId Int?
+  discipline   Discipline? @relation(fields: [disciplineId], references: [id], onDelete: SetNull)
+
+  @@map("staff")
+}
+
+model Message {
+  id             Int      @id @default(autoincrement())
+  texto          String
+  fecha          DateTime @default(now())
+  leido          Boolean  @default(false)
+  remitenteId    Int
+  remitente      User     @relation("MensajesEnviados", fields: [remitenteId], references: [id], onDelete: Cascade)
+  destinatarioId Int
+  destinatario   User     @relation("MensajesRecibidos", fields: [destinatarioId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model AuditLog {
+  id     Int      @id @default(autoincrement())
+  accion String
+  tabla  String
+  fecha  DateTime @default(now())
+  userId Int?
+  user   User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
+
+model File {
+  id     Int      @id @default(autoincrement())
+  nombre String
+  url    String
+  tipo   String
+  fecha  DateTime @default(now())
+  userId Int
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("files")
+}
