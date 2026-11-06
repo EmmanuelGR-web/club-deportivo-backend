@@ -1,7 +1,6 @@
 {
   "info": {
     "name": "Club Deportivo Backend",
-    "description": "Endpoints de la API del Club Deportivo (NestJS). Levantar la API con `npm run start:dev` antes de ejecutar las peticiones.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -21,8 +20,7 @@
               "path": [
                 ""
               ]
-            },
-            "description": "Responde \"API del Club Deportivo funcionando\"."
+            }
           },
           "response": []
         }
@@ -30,7 +28,6 @@
     },
     {
       "name": "Usuarios",
-      "description": "CRUD de usuarios en /usuarios",
       "item": [
         {
           "name": "Crear usuario",
@@ -59,8 +56,7 @@
               "path": [
                 "usuarios"
               ]
-            },
-            "description": "Crea un usuario nuevo."
+            }
           },
           "response": []
         },
@@ -77,8 +73,7 @@
               "path": [
                 "usuarios"
               ]
-            },
-            "description": "Lista todos los registros de /usuarios."
+            }
           },
           "response": []
         },
@@ -96,8 +91,7 @@
                 "usuarios",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -129,8 +123,7 @@
                 "usuarios",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -148,8 +141,7 @@
                 "usuarios",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -157,7 +149,6 @@
     },
     {
       "name": "Socios",
-      "description": "CRUD de socios en /socios",
       "item": [
         {
           "name": "Crear socio",
@@ -171,7 +162,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"numeroSocio\": 1006,\n  \"nombre\": \"Pedro Gómez\",\n  \"dni\": \"42678901\",\n  \"email\": \"pgomez@gmail.com\",\n  \"categoria\": \"Activo\",\n  \"medioPago\": \"Transferencia\",\n  \"disciplineId\": 1\n}",
+              "raw": "{\n  \"numeroSocio\": 1006,\n  \"dni\": \"42678901\",\n  \"userId\": 12,\n  \"disciplineId\": 1,\n  \"paymentMethodId\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -186,8 +177,7 @@
               "path": [
                 "socios"
               ]
-            },
-            "description": "Crea un socio nuevo."
+            }
           },
           "response": []
         },
@@ -204,8 +194,7 @@
               "path": [
                 "socios"
               ]
-            },
-            "description": "Lista todos los registros de /socios."
+            }
           },
           "response": []
         },
@@ -223,8 +212,7 @@
                 "socios",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -256,8 +244,7 @@
                 "socios",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -275,8 +262,7 @@
                 "socios",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -284,7 +270,6 @@
     },
     {
       "name": "Pagos",
-      "description": "CRUD de pagos en /pagos",
       "item": [
         {
           "name": "Crear pago",
@@ -298,7 +283,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"concepto\": \"Cuota noviembre\",\n  \"monto\": 15000,\n  \"fecha\": \"2026-11-10\",\n  \"medio\": \"Transferencia\",\n  \"estado\": \"pendiente\",\n  \"memberId\": 1\n}",
+              "raw": "{\n  \"concepto\": \"Cuota noviembre\",\n  \"monto\": 15000,\n  \"fecha\": \"2026-11-10\",\n  \"estado\": \"pendiente\",\n  \"memberId\": 1,\n  \"paymentMethodId\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -313,8 +298,7 @@
               "path": [
                 "pagos"
               ]
-            },
-            "description": "Crea un pago nuevo."
+            }
           },
           "response": []
         },
@@ -331,8 +315,7 @@
               "path": [
                 "pagos"
               ]
-            },
-            "description": "Lista todos los registros de /pagos."
+            }
           },
           "response": []
         },
@@ -350,8 +333,7 @@
                 "pagos",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -383,8 +365,7 @@
                 "pagos",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -402,8 +383,7 @@
                 "pagos",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -411,7 +391,6 @@
     },
     {
       "name": "Noticias",
-      "description": "CRUD de noticias en /noticias",
       "item": [
         {
           "name": "Crear noticia",
@@ -425,7 +404,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Inscripciones abiertas\",\n  \"resumen\": \"Abren las inscripciones de verano\",\n  \"cuerpo\": \"Desde diciembre se puede inscribir a la colonia de verano.\",\n  \"categoria\": \"Institucional\",\n  \"userId\": 1\n}",
+              "raw": "{\n  \"titulo\": \"Inscripciones abiertas\",\n  \"resumen\": \"Abren las inscripciones de verano\",\n  \"cuerpo\": \"Desde diciembre se puede inscribir a la colonia de verano.\",\n  \"userId\": 1,\n  \"newsCategoryId\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -440,8 +419,7 @@
               "path": [
                 "noticias"
               ]
-            },
-            "description": "Crea un noticia nuevo."
+            }
           },
           "response": []
         },
@@ -458,8 +436,7 @@
               "path": [
                 "noticias"
               ]
-            },
-            "description": "Lista todos los registros de /noticias."
+            }
           },
           "response": []
         },
@@ -477,8 +454,7 @@
                 "noticias",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -510,8 +486,7 @@
                 "noticias",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -529,8 +504,7 @@
                 "noticias",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -538,7 +512,6 @@
     },
     {
       "name": "Disciplinas",
-      "description": "CRUD de disciplinas en /disciplinas",
       "item": [
         {
           "name": "Crear disciplina",
@@ -567,8 +540,7 @@
               "path": [
                 "disciplinas"
               ]
-            },
-            "description": "Crea un disciplina nuevo."
+            }
           },
           "response": []
         },
@@ -585,8 +557,7 @@
               "path": [
                 "disciplinas"
               ]
-            },
-            "description": "Lista todos los registros de /disciplinas."
+            }
           },
           "response": []
         },
@@ -604,8 +575,7 @@
                 "disciplinas",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -637,8 +607,7 @@
                 "disciplinas",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -656,8 +625,7 @@
                 "disciplinas",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -665,7 +633,6 @@
     },
     {
       "name": "Eventos",
-      "description": "CRUD de eventos en /eventos",
       "item": [
         {
           "name": "Crear evento",
@@ -694,8 +661,7 @@
               "path": [
                 "eventos"
               ]
-            },
-            "description": "Crea un evento nuevo."
+            }
           },
           "response": []
         },
@@ -712,8 +678,7 @@
               "path": [
                 "eventos"
               ]
-            },
-            "description": "Lista todos los registros de /eventos."
+            }
           },
           "response": []
         },
@@ -731,8 +696,7 @@
                 "eventos",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -764,8 +728,7 @@
                 "eventos",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -783,8 +746,7 @@
                 "eventos",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -792,7 +754,6 @@
     },
     {
       "name": "Personal",
-      "description": "CRUD de personal en /personal",
       "item": [
         {
           "name": "Crear empleado",
@@ -806,7 +767,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Marta Ríos\",\n  \"cargo\": \"Recepcionista\",\n  \"telefono\": \"3815551006\"\n}",
+              "raw": "{\n  \"cargo\": \"Recepcionista\",\n  \"telefono\": \"3815551006\",\n  \"userId\": 13\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -821,8 +782,7 @@
               "path": [
                 "personal"
               ]
-            },
-            "description": "Crea un empleado nuevo."
+            }
           },
           "response": []
         },
@@ -839,8 +799,7 @@
               "path": [
                 "personal"
               ]
-            },
-            "description": "Lista todos los registros de /personal."
+            }
           },
           "response": []
         },
@@ -858,8 +817,7 @@
                 "personal",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -891,8 +849,7 @@
                 "personal",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -910,8 +867,7 @@
                 "personal",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -919,7 +875,6 @@
     },
     {
       "name": "Mensajes",
-      "description": "CRUD de mensajes en /mensajes",
       "item": [
         {
           "name": "Crear mensaje",
@@ -948,8 +903,7 @@
               "path": [
                 "mensajes"
               ]
-            },
-            "description": "Crea un mensaje nuevo."
+            }
           },
           "response": []
         },
@@ -966,8 +920,7 @@
               "path": [
                 "mensajes"
               ]
-            },
-            "description": "Lista todos los registros de /mensajes."
+            }
           },
           "response": []
         },
@@ -985,8 +938,7 @@
                 "mensajes",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -1018,8 +970,7 @@
                 "mensajes",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -1037,8 +988,7 @@
                 "mensajes",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -1046,7 +996,6 @@
     },
     {
       "name": "Registro de cambios",
-      "description": "CRUD de registro de cambios en /registro-cambios",
       "item": [
         {
           "name": "Crear registro",
@@ -1075,8 +1024,7 @@
               "path": [
                 "registro-cambios"
               ]
-            },
-            "description": "Crea un registro nuevo."
+            }
           },
           "response": []
         },
@@ -1093,8 +1041,7 @@
               "path": [
                 "registro-cambios"
               ]
-            },
-            "description": "Lista todos los registros de /registro-cambios."
+            }
           },
           "response": []
         },
@@ -1112,8 +1059,7 @@
                 "registro-cambios",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -1145,8 +1091,7 @@
                 "registro-cambios",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -1164,8 +1109,7 @@
                 "registro-cambios",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
@@ -1173,7 +1117,6 @@
     },
     {
       "name": "Archivos",
-      "description": "CRUD de archivos en /archivos",
       "item": [
         {
           "name": "Crear archivo",
@@ -1202,8 +1145,7 @@
               "path": [
                 "archivos"
               ]
-            },
-            "description": "Crea un archivo nuevo."
+            }
           },
           "response": []
         },
@@ -1220,8 +1162,7 @@
               "path": [
                 "archivos"
               ]
-            },
-            "description": "Lista todos los registros de /archivos."
+            }
           },
           "response": []
         },
@@ -1239,8 +1180,7 @@
                 "archivos",
                 "1"
               ]
-            },
-            "description": "Trae el registro con id 1."
+            }
           },
           "response": []
         },
@@ -1272,8 +1212,7 @@
                 "archivos",
                 "1"
               ]
-            },
-            "description": "Modifica el registro con id 1. Solo se mandan los campos que cambian."
+            }
           },
           "response": []
         },
@@ -1291,8 +1230,7 @@
                 "archivos",
                 "1"
               ]
-            },
-            "description": "Elimina el registro con id 1."
+            }
           },
           "response": []
         }
