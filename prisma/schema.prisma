@@ -26,15 +26,32 @@ enum EstadoPago {
 }
 
 model Discipline {
-  id           Int      @id @default(autoincrement())
-  nombre       String   @unique
-  descripcion  String?
-  cuotaMensual Decimal  @db.Decimal(10, 2)
-  members      Member[]
-  events       Event[]
-  staff        Staff[]
+  id          Int     @id @default(autoincrement())
+  nombre      String  @unique
+  descripcion String?
+  imagen      String?
+  categorias  String?
+  dias        String?
+  events      Event[]
 
   @@map("disciplines")
+}
+
+model PaymentMethod {
+  id       Int       @id @default(autoincrement())
+  nombre   String    @unique
+  members  Member[]
+  payments Payment[]
+
+  @@map("payment_methods")
+}
+
+model NewsCategory {
+  id     Int    @id @default(autoincrement())
+  nombre String @unique
+  news   News[]
+
+  @@map("news_categories")
 }
 
 model User {
@@ -57,49 +74,47 @@ model User {
 }
 
 model Member {
-  id           Int         @id @default(autoincrement())
-  numeroSocio  Int         @unique
-  nombre       String
-  dni          String      @unique
-  email        String
-  categoria    String
-  estado       EstadoSocio @default(activo)
-  medioPago    String
-  fechaAlta    DateTime    @default(now()) @db.Date
-  userId       Int?        @unique
-  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  disciplineId Int
-  discipline   Discipline  @relation(fields: [disciplineId], references: [id], onDelete: Restrict)
-  payments     Payment[]
+  id              Int           @id @default(autoincrement())
+  numeroSocio     Int           @unique
+  dni             String        @unique
+  estado          EstadoSocio   @default(activo)
+  fechaAlta       DateTime      @default(now()) @db.Date
+  userId          Int           @unique
+  user            User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  paymentMethodId Int
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  payments        Payment[]
 
   @@map("members")
 }
 
 model Payment {
-  id          Int        @id @default(autoincrement())
-  concepto    String
-  monto       Decimal    @db.Decimal(10, 2)
-  fecha       DateTime   @db.Date
-  medio       String
-  estado      EstadoPago @default(pendiente)
-  recargo     Decimal    @default(0) @db.Decimal(10, 2)
-  comprobante String?
-  memberId    Int
-  member      Member     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  id              Int           @id @default(autoincrement())
+  concepto        String
+  monto           Decimal       @db.Decimal(10, 2)
+  fecha           DateTime      @db.Date
+  estado          EstadoPago    @default(pendiente)
+  recargo         Decimal       @default(0) @db.Decimal(10, 2)
+  comprobante     String?
+  memberId        Int
+  member          Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  paymentMethodId Int
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
 
   @@map("payments")
 }
 
 model News {
-  id        Int      @id @default(autoincrement())
-  titulo    String
-  resumen   String
-  cuerpo    String   @db.Text
-  categoria String
-  imagen    String?
-  fecha     DateTime @default(now())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  id             Int          @id @default(autoincrement())
+  titulo         String
+  resumen        String
+  cuerpo         String       @db.Text
+  imagen         String?
+  fecha          DateTime     @default(now())
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  newsCategoryId Int
+  newsCategory   NewsCategory @relation(fields: [newsCategoryId], references: [id], onDelete: Restrict)
 
   @@map("news")
 }
@@ -117,14 +132,11 @@ model Event {
 }
 
 model Staff {
-  id           Int         @id @default(autoincrement())
-  nombre       String
-  cargo        String
-  telefono     String?
-  userId       Int?        @unique
-  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  disciplineId Int?
-  discipline   Discipline? @relation(fields: [disciplineId], references: [id], onDelete: SetNull)
+  id       Int     @id @default(autoincrement())
+  cargo    String
+  telefono String?
+  userId   Int     @unique
+  user     User    @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   @@map("staff")
 }

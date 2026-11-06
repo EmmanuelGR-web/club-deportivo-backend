@@ -16,33 +16,78 @@ async function cargarDatos() {
   await prisma.member.deleteMany();
   await prisma.user.deleteMany();
   await prisma.discipline.deleteMany();
+  await prisma.paymentMethod.deleteMany();
+  await prisma.newsCategory.deleteMany();
+
+  const mediosPago = await prisma.paymentMethod.createManyAndReturn({
+    data: [
+      { nombre: 'Transferencia' },
+      { nombre: 'Tarjeta' },
+      { nombre: 'Efectivo' },
+      { nombre: 'Mercado Pago' },
+      { nombre: 'Débito automático' },
+    ],
+  });
+
+  const categoriasNoticias = await prisma.newsCategory.createManyAndReturn({
+    data: [
+      { nombre: 'Institucional' },
+      { nombre: 'Fútbol' },
+      { nombre: 'Básquet' },
+      { nombre: 'Natación' },
+      { nombre: 'Hockey' },
+    ],
+  });
 
   const disciplinas = await prisma.discipline.createManyAndReturn({
     data: [
       {
         nombre: 'Fútbol',
-        descripcion: 'Inferiores y primera',
-        cuotaMensual: 15000,
+        descripcion:
+          'Categorías desde infantiles hasta primera división, con los profes de la escuela del club.',
+        imagen: '/disciplinas/futbol.jpg',
+        categorias: 'Infantiles (5 a 12) · Juveniles · Primera',
+        dias: 'Lunes a viernes, de 17 a 20 h',
       },
       {
         nombre: 'Básquet',
-        descripcion: 'Formativas y mayores',
-        cuotaMensual: 12000,
+        descripcion:
+          'Mini, formativas y primera, masculino y femenino, en el estadio cubierto.',
+        imagen: '/disciplinas/basquet.jpeg',
+        categorias: 'Mini (6 a 12) · Formativas · Primera',
+        dias: 'Lunes, miércoles y viernes, de 18 a 21 h',
       },
       {
         nombre: 'Vóley',
-        descripcion: 'Femenino y masculino',
-        cuotaMensual: 11000,
-      },
-      {
-        nombre: 'Natación',
-        descripcion: 'Escuela y competición',
-        cuotaMensual: 14000,
+        descripcion:
+          'El equipo femenino juega la final del Apertura. También hay categorías mixtas.',
+        imagen: '/disciplinas/voley.jpg',
+        categorias: 'Sub-12 · Sub-16 · Primera femenina',
+        dias: 'Martes y jueves, de 18 a 21 h',
       },
       {
         nombre: 'Hockey',
-        descripcion: 'Damas y caballeros',
-        cuotaMensual: 13000,
+        descripcion:
+          'Una de las ramas con más jugadoras de la provincia, en cancha sintética.',
+        imagen: '/disciplinas/hockey.jpg',
+        categorias: 'Sub-8 a Primera · Mamis hockey',
+        dias: 'Martes, jueves y sábados',
+      },
+      {
+        nombre: 'Natación',
+        descripcion:
+          'Escuela de natación y equipo de competición en la pileta climatizada.',
+        imagen: '/disciplinas/natacion.jpg',
+        categorias: 'Escuelita (4 a 10) · Competición · Adultos',
+        dias: 'Lunes a sábado, turnos de 8 a 21 h',
+      },
+      {
+        nombre: 'Tenis',
+        descripcion:
+          'Clases grupales e individuales en canchas de polvo de ladrillo.',
+        imagen: '/disciplinas/tenis.jpeg',
+        categorias: 'Infantiles · Juveniles · Adultos',
+        dias: 'Todos los días, con turno previo',
       },
     ],
   });
@@ -79,6 +124,42 @@ async function cargarDatos() {
         contrasena: 'socio123',
         rol: 'socio',
       },
+      {
+        nombre: 'Carlos Ruiz',
+        email: 'cruiz@gmail.com',
+        contrasena: 'socio123',
+        rol: 'socio',
+      },
+      {
+        nombre: 'Valentina Sosa',
+        email: 'vsosa@gmail.com',
+        contrasena: 'socio123',
+        rol: 'socio',
+      },
+      {
+        nombre: 'Diego Romero',
+        email: 'dromero@gmail.com',
+        contrasena: 'socio123',
+        rol: 'socio',
+      },
+      {
+        nombre: 'Roberto Medina',
+        email: 'rmedina@clubsanmartin.com',
+        contrasena: 'personal123',
+        rol: 'personal',
+      },
+      {
+        nombre: 'Lucía Paz',
+        email: 'lpaz@clubsanmartin.com',
+        contrasena: 'personal123',
+        rol: 'personal',
+      },
+      {
+        nombre: 'Jorge Vega',
+        email: 'jvega@clubsanmartin.com',
+        contrasena: 'personal123',
+        rol: 'personal',
+      },
     ],
   });
 
@@ -86,52 +167,40 @@ async function cargarDatos() {
     data: [
       {
         numeroSocio: 1001,
-        nombre: 'Juan Pérez',
+        fechaAlta: new Date('2025-03-10'),
         dni: '40123456',
-        email: 'jperez@gmail.com',
-        categoria: 'Activo',
-        medioPago: 'Transferencia',
         userId: usuarios[3].id,
-        disciplineId: disciplinas[0].id,
+        paymentMethodId: mediosPago[0].id,
       },
       {
         numeroSocio: 1002,
-        nombre: 'Ana López',
+        fechaAlta: new Date('2020-06-15'),
         dni: '41234567',
-        email: 'alopez@gmail.com',
-        categoria: 'Activo',
-        medioPago: 'Tarjeta',
         userId: usuarios[4].id,
-        disciplineId: disciplinas[2].id,
+        paymentMethodId: mediosPago[1].id,
       },
       {
         numeroSocio: 1003,
-        nombre: 'Carlos Ruiz',
+        fechaAlta: new Date('1998-04-01'),
         dni: '38345678',
-        email: 'cruiz@gmail.com',
-        categoria: 'Vitalicio',
-        medioPago: 'Efectivo',
-        disciplineId: disciplinas[1].id,
+        userId: usuarios[5].id,
+        paymentMethodId: mediosPago[2].id,
       },
       {
         numeroSocio: 1004,
-        nombre: 'Valentina Sosa',
+        fechaAlta: new Date('2024-09-20'),
         dni: '45456789',
-        email: 'vsosa@gmail.com',
-        categoria: 'Cadete',
         estado: 'moroso',
-        medioPago: 'Mercado Pago',
-        disciplineId: disciplinas[3].id,
+        userId: usuarios[6].id,
+        paymentMethodId: mediosPago[3].id,
       },
       {
         numeroSocio: 1005,
-        nombre: 'Diego Romero',
+        fechaAlta: new Date('2012-02-05'),
         dni: '39567890',
-        email: 'dromero@gmail.com',
-        categoria: 'Activo',
         estado: 'baja',
-        medioPago: 'Transferencia',
-        disciplineId: disciplinas[4].id,
+        userId: usuarios[7].id,
+        paymentMethodId: mediosPago[4].id,
       },
     ],
   });
@@ -142,42 +211,42 @@ async function cargarDatos() {
         concepto: 'Cuota octubre',
         monto: 15000,
         fecha: new Date('2026-10-05'),
-        medio: 'Transferencia',
+        paymentMethodId: mediosPago[0].id,
         estado: 'pagado',
         comprobante: 'TRF-0001',
         memberId: socios[0].id,
       },
       {
         concepto: 'Cuota octubre',
-        monto: 11000,
+        monto: 15000,
         fecha: new Date('2026-10-07'),
-        medio: 'Tarjeta',
+        paymentMethodId: mediosPago[1].id,
         estado: 'pagado',
         comprobante: 'TAR-0002',
         memberId: socios[1].id,
       },
       {
         concepto: 'Cuota octubre',
-        monto: 12000,
+        monto: 15000,
         fecha: new Date('2026-10-10'),
-        medio: 'Efectivo',
+        paymentMethodId: mediosPago[2].id,
         estado: 'pagado',
         memberId: socios[2].id,
       },
       {
         concepto: 'Cuota septiembre',
-        monto: 14000,
+        monto: 15000,
         fecha: new Date('2026-09-25'),
-        medio: 'Mercado Pago',
+        paymentMethodId: mediosPago[3].id,
         estado: 'vencido',
-        recargo: 1400,
+        recargo: 150,
         memberId: socios[3].id,
       },
       {
         concepto: 'Cuota noviembre',
         monto: 15000,
         fecha: new Date('2026-11-10'),
-        medio: 'Transferencia',
+        paymentMethodId: mediosPago[0].id,
         estado: 'pendiente',
         memberId: socios[0].id,
       },
@@ -191,7 +260,7 @@ async function cargarDatos() {
         resumen: 'Inscripciones abiertas para inferiores',
         cuerpo:
           'Desde el lunes se abren las inscripciones para todas las categorías de inferiores.',
-        categoria: 'Fútbol',
+        newsCategoryId: categoriasNoticias[1].id,
         userId: usuarios[0].id,
       },
       {
@@ -199,21 +268,21 @@ async function cargarDatos() {
         resumen: 'El club recibe el torneo regional',
         cuerpo:
           'Este fin de semana se juega el torneo regional de básquet en el estadio cubierto.',
-        categoria: 'Básquet',
+        newsCategoryId: categoriasNoticias[2].id,
         userId: usuarios[1].id,
       },
       {
         titulo: 'Nuevo horario de pileta',
         resumen: 'La pileta abre más temprano',
         cuerpo: 'A partir de noviembre la pileta abre a las 7 de la mañana.',
-        categoria: 'Natación',
+        newsCategoryId: categoriasNoticias[3].id,
         userId: usuarios[2].id,
       },
       {
         titulo: 'Asamblea de socios',
         resumen: 'Convocatoria a asamblea anual',
         cuerpo: 'Se convoca a todos los socios a la asamblea anual del club.',
-        categoria: 'Institucional',
+        newsCategoryId: categoriasNoticias[0].id,
         userId: usuarios[0].id,
       },
       {
@@ -221,7 +290,7 @@ async function cargarDatos() {
         resumen: 'Las damas ganaron el torneo',
         cuerpo:
           'El equipo de hockey damas se consagró campeón del torneo provincial.',
-        categoria: 'Hockey',
+        newsCategoryId: categoriasNoticias[4].id,
         userId: usuarios[1].id,
       },
     ],
@@ -254,13 +323,13 @@ async function cargarDatos() {
         descripcion: 'Competencia infantil',
         fecha: new Date('2026-11-15T09:00:00'),
         lugar: 'Pileta olímpica',
-        disciplineId: disciplinas[3].id,
+        disciplineId: disciplinas[4].id,
       },
       {
         titulo: 'Amistoso de hockey',
         fecha: new Date('2026-11-20T16:00:00'),
         lugar: 'Cancha sintética',
-        disciplineId: disciplinas[4].id,
+        disciplineId: disciplinas[3].id,
       },
     ],
   });
@@ -268,32 +337,30 @@ async function cargarDatos() {
   await prisma.staff.createMany({
     data: [
       {
-        nombre: 'Martín Díaz',
         cargo: 'Entrenador',
         telefono: '3815551001',
         userId: usuarios[1].id,
-        disciplineId: disciplinas[0].id,
       },
       {
-        nombre: 'Sofía Herrera',
         cargo: 'Profesora',
         telefono: '3815551002',
         userId: usuarios[2].id,
-        disciplineId: disciplinas[3].id,
       },
       {
-        nombre: 'Roberto Medina',
         cargo: 'Preparador físico',
         telefono: '3815551003',
-        disciplineId: disciplinas[1].id,
+        userId: usuarios[8].id,
       },
       {
-        nombre: 'Lucía Paz',
         cargo: 'Entrenadora',
         telefono: '3815551004',
-        disciplineId: disciplinas[4].id,
+        userId: usuarios[9].id,
       },
-      { nombre: 'Jorge Vega', cargo: 'Administrativo', telefono: '3815551005' },
+      {
+        cargo: 'Administrativo',
+        telefono: '3815551005',
+        userId: usuarios[10].id,
+      },
     ],
   });
 
@@ -373,7 +440,7 @@ async function cargarDatos() {
     ],
   });
 
-  console.log('Datos cargados: 5 registros por tabla');
+  console.log('Datos cargados: al menos 5 registros por tabla');
 }
 
 cargarDatos()
