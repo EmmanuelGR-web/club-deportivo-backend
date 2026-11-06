@@ -26,13 +26,13 @@ enum EstadoPago {
 }
 
 model Discipline {
-  id           Int      @id @default(autoincrement())
-  nombre       String   @unique
-  descripcion  String?
-  cuotaMensual Decimal  @db.Decimal(10, 2)
-  members      Member[]
-  events       Event[]
-  staff        Staff[]
+  id          Int     @id @default(autoincrement())
+  nombre      String  @unique
+  descripcion String?
+  imagen      String?
+  categorias  String?
+  dias        String?
+  events      Event[]
 
   @@map("disciplines")
 }
@@ -81,8 +81,6 @@ model Member {
   fechaAlta       DateTime      @default(now()) @db.Date
   userId          Int           @unique
   user            User          @relation(fields: [userId], references: [id], onDelete: Restrict)
-  disciplineId    Int
-  discipline      Discipline    @relation(fields: [disciplineId], references: [id], onDelete: Restrict)
   paymentMethodId Int
   paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
   payments        Payment[]
@@ -134,13 +132,11 @@ model Event {
 }
 
 model Staff {
-  id           Int         @id @default(autoincrement())
-  cargo        String
-  telefono     String?
-  userId       Int         @unique
-  user         User        @relation(fields: [userId], references: [id], onDelete: Restrict)
-  disciplineId Int?
-  discipline   Discipline? @relation(fields: [disciplineId], references: [id], onDelete: SetNull)
+  id       Int     @id @default(autoincrement())
+  cargo    String
+  telefono String?
+  userId   Int     @unique
+  user     User    @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   @@map("staff")
 }

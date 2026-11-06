@@ -43,28 +43,51 @@ async function cargarDatos() {
     data: [
       {
         nombre: 'Fútbol',
-        descripcion: 'Inferiores y primera',
-        cuotaMensual: 15000,
+        descripcion:
+          'Categorías desde infantiles hasta primera división, con los profes de la escuela del club.',
+        imagen: '/disciplinas/futbol.jpg',
+        categorias: 'Infantiles (5 a 12) · Juveniles · Primera',
+        dias: 'Lunes a viernes, de 17 a 20 h',
       },
       {
         nombre: 'Básquet',
-        descripcion: 'Formativas y mayores',
-        cuotaMensual: 12000,
+        descripcion:
+          'Mini, formativas y primera, masculino y femenino, en el estadio cubierto.',
+        imagen: '/disciplinas/basquet.jpeg',
+        categorias: 'Mini (6 a 12) · Formativas · Primera',
+        dias: 'Lunes, miércoles y viernes, de 18 a 21 h',
       },
       {
         nombre: 'Vóley',
-        descripcion: 'Femenino y masculino',
-        cuotaMensual: 11000,
-      },
-      {
-        nombre: 'Natación',
-        descripcion: 'Escuela y competición',
-        cuotaMensual: 14000,
+        descripcion:
+          'El equipo femenino juega la final del Apertura. También hay categorías mixtas.',
+        imagen: '/disciplinas/voley.jpg',
+        categorias: 'Sub-12 · Sub-16 · Primera femenina',
+        dias: 'Martes y jueves, de 18 a 21 h',
       },
       {
         nombre: 'Hockey',
-        descripcion: 'Damas y caballeros',
-        cuotaMensual: 13000,
+        descripcion:
+          'Una de las ramas con más jugadoras de la provincia, en cancha sintética.',
+        imagen: '/disciplinas/hockey.jpg',
+        categorias: 'Sub-8 a Primera · Mamis hockey',
+        dias: 'Martes, jueves y sábados',
+      },
+      {
+        nombre: 'Natación',
+        descripcion:
+          'Escuela de natación y equipo de competición en la pileta climatizada.',
+        imagen: '/disciplinas/natacion.jpg',
+        categorias: 'Escuelita (4 a 10) · Competición · Adultos',
+        dias: 'Lunes a sábado, turnos de 8 a 21 h',
+      },
+      {
+        nombre: 'Tenis',
+        descripcion:
+          'Clases grupales e individuales en canchas de polvo de ladrillo.',
+        imagen: '/disciplinas/tenis.jpeg',
+        categorias: 'Infantiles · Juveniles · Adultos',
+        dias: 'Todos los días, con turno previo',
       },
     ],
   });
@@ -147,7 +170,6 @@ async function cargarDatos() {
         fechaAlta: new Date('2025-03-10'),
         dni: '40123456',
         userId: usuarios[3].id,
-        disciplineId: disciplinas[0].id,
         paymentMethodId: mediosPago[0].id,
       },
       {
@@ -155,7 +177,6 @@ async function cargarDatos() {
         fechaAlta: new Date('2020-06-15'),
         dni: '41234567',
         userId: usuarios[4].id,
-        disciplineId: disciplinas[2].id,
         paymentMethodId: mediosPago[1].id,
       },
       {
@@ -163,7 +184,6 @@ async function cargarDatos() {
         fechaAlta: new Date('1998-04-01'),
         dni: '38345678',
         userId: usuarios[5].id,
-        disciplineId: disciplinas[1].id,
         paymentMethodId: mediosPago[2].id,
       },
       {
@@ -172,7 +192,6 @@ async function cargarDatos() {
         dni: '45456789',
         estado: 'moroso',
         userId: usuarios[6].id,
-        disciplineId: disciplinas[3].id,
         paymentMethodId: mediosPago[3].id,
       },
       {
@@ -181,7 +200,6 @@ async function cargarDatos() {
         dni: '39567890',
         estado: 'baja',
         userId: usuarios[7].id,
-        disciplineId: disciplinas[4].id,
         paymentMethodId: mediosPago[4].id,
       },
     ],
@@ -200,7 +218,7 @@ async function cargarDatos() {
       },
       {
         concepto: 'Cuota octubre',
-        monto: 11000,
+        monto: 15000,
         fecha: new Date('2026-10-07'),
         paymentMethodId: mediosPago[1].id,
         estado: 'pagado',
@@ -209,7 +227,7 @@ async function cargarDatos() {
       },
       {
         concepto: 'Cuota octubre',
-        monto: 12000,
+        monto: 15000,
         fecha: new Date('2026-10-10'),
         paymentMethodId: mediosPago[2].id,
         estado: 'pagado',
@@ -217,11 +235,11 @@ async function cargarDatos() {
       },
       {
         concepto: 'Cuota septiembre',
-        monto: 14000,
+        monto: 15000,
         fecha: new Date('2026-09-25'),
         paymentMethodId: mediosPago[3].id,
         estado: 'vencido',
-        recargo: 1400,
+        recargo: 150,
         memberId: socios[3].id,
       },
       {
@@ -305,13 +323,13 @@ async function cargarDatos() {
         descripcion: 'Competencia infantil',
         fecha: new Date('2026-11-15T09:00:00'),
         lugar: 'Pileta olímpica',
-        disciplineId: disciplinas[3].id,
+        disciplineId: disciplinas[4].id,
       },
       {
         titulo: 'Amistoso de hockey',
         fecha: new Date('2026-11-20T16:00:00'),
         lugar: 'Cancha sintética',
-        disciplineId: disciplinas[4].id,
+        disciplineId: disciplinas[3].id,
       },
     ],
   });
@@ -322,25 +340,21 @@ async function cargarDatos() {
         cargo: 'Entrenador',
         telefono: '3815551001',
         userId: usuarios[1].id,
-        disciplineId: disciplinas[0].id,
       },
       {
         cargo: 'Profesora',
         telefono: '3815551002',
         userId: usuarios[2].id,
-        disciplineId: disciplinas[3].id,
       },
       {
         cargo: 'Preparador físico',
         telefono: '3815551003',
         userId: usuarios[8].id,
-        disciplineId: disciplinas[1].id,
       },
       {
         cargo: 'Entrenadora',
         telefono: '3815551004',
         userId: usuarios[9].id,
-        disciplineId: disciplinas[4].id,
       },
       {
         cargo: 'Administrativo',

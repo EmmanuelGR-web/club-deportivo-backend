@@ -85,7 +85,7 @@ Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `c
 | `src/modules/members/` | Alta, datos y estado de los socios. |
 | `src/modules/payments/` | Cuotas, pagos y comprobantes. |
 | `src/modules/news/` | Noticias del club. |
-| `src/modules/disciplines/` | Disciplinas deportivas. |
+| `src/modules/disciplines/` | Disciplinas deportivas, como información para la página. |
 | `src/modules/events/` | Calendario de eventos. |
 | `src/modules/staff/` | Personal del club y control de jornadas. |
 | `src/modules/messages/` | Mensajería interna entre socios y personal. |
@@ -99,15 +99,15 @@ La base tiene 12 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.pri
 
 | Tabla | Columnas principales | Claves foráneas |
 | --- | --- | --- |
-| `disciplines` | nombre (único), descripcion, cuotaMensual | — |
+| `disciplines` | nombre (único), descripcion, imagen, categorias, dias | — |
 | `payment_methods` | nombre (único) | — |
 | `news_categories` | nombre (único) | — |
 | `users` | nombre, email (único), contrasena, rol, bloqueado, creadoEn | — |
-| `members` | numeroSocio (único), dni (único), estado, fechaAlta | `userId` → users (único), `disciplineId` → disciplines, `paymentMethodId` → payment_methods |
+| `members` | numeroSocio (único), dni (único), estado, fechaAlta | `userId` → users (único), `paymentMethodId` → payment_methods |
 | `payments` | concepto, monto, fecha, estado, recargo, comprobante | `memberId` → members, `paymentMethodId` → payment_methods |
 | `news` | titulo, resumen, cuerpo, imagen, fecha | `userId` → users, `newsCategoryId` → news_categories |
 | `events` | titulo, descripcion, fecha, lugar | `disciplineId` → disciplines |
-| `staff` | cargo, telefono | `userId` → users (único), `disciplineId` → disciplines |
+| `staff` | cargo, telefono | `userId` → users (único) |
 | `messages` | texto, fecha, leido | `remitenteId` → users, `destinatarioId` → users |
 | `audit_logs` | accion, tabla, fecha | `userId` → users |
 | `files` | nombre, url, tipo, fecha | `userId` → users |
@@ -117,6 +117,7 @@ Cómo se cumple la 3FN:
 - El nombre y el email de socios y personal se guardan solo en `users`; `members` y `staff` los toman por `userId`. Así un dato no queda repetido en dos tablas.
 - Los medios de pago y las categorías de noticias tienen su propia tabla, y las demás tablas guardan solo su `id`.
 - La categoría del socio no se guarda: se calcula con la antigüedad desde `fechaAlta` (Bronce hasta 2 años, Plata de 2 a 10 y Oro más de 10). Guardarla sería repetir un dato que ya sale de otro.
+- La cuota mensual es la misma para todos los socios ($15.000). Las disciplinas son solo informativas: se muestran en la sección de deportes de la página y no se cobran aparte.
 
 Valores permitidos (enums):
 
@@ -127,7 +128,8 @@ Valores permitidos (enums):
 Reglas al borrar:
 
 - Al borrar un socio se borran sus pagos (`Cascade`).
-- No se puede borrar una disciplina que tenga socios (`Restrict`), ni un medio de pago o una categoría de noticias que estén en uso.
+- No se puede borrar un medio de pago o una categoría de noticias que estén en uso (`Restrict`).
+- Al borrar una disciplina se borran sus eventos (`Cascade`).
 - No se puede borrar un usuario que tenga ficha de socio o de personal, ni uno que sea autor de noticias (`Restrict`).
 - Al borrar un usuario se borran sus mensajes y archivos (`Cascade`), y su registro de cambios queda sin usuario asociado (`SetNull`).
 
