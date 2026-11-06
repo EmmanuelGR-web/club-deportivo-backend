@@ -99,20 +99,28 @@ Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `c
 
 ## Base de datos
 
-La base tiene 10 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.prisma). Todas usan `id` autoincremental como clave primaria.
+La base tiene 12 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.prisma) y normalizadas hasta la tercera forma normal (3FN). Todas usan `id` autoincremental como clave primaria y tienen al menos 5 registros de prueba.
 
 | Tabla | Columnas principales | Claves foráneas |
 | --- | --- | --- |
 | `disciplines` | nombre (único), descripcion, cuotaMensual | — |
+| `payment_methods` | nombre (único) | — |
+| `news_categories` | nombre (único) | — |
 | `users` | nombre, email (único), contrasena, rol, bloqueado, creadoEn | — |
-| `members` | numeroSocio (único), nombre, dni (único), email, categoria, estado, medioPago, fechaAlta | `userId` → users, `disciplineId` → disciplines |
-| `payments` | concepto, monto, fecha, medio, estado, recargo, comprobante | `memberId` → members |
-| `news` | titulo, resumen, cuerpo, categoria, imagen, fecha | `userId` → users |
+| `members` | numeroSocio (único), dni (único), estado, fechaAlta | `userId` → users (único), `disciplineId` → disciplines, `paymentMethodId` → payment_methods |
+| `payments` | concepto, monto, fecha, estado, recargo, comprobante | `memberId` → members, `paymentMethodId` → payment_methods |
+| `news` | titulo, resumen, cuerpo, imagen, fecha | `userId` → users, `newsCategoryId` → news_categories |
 | `events` | titulo, descripcion, fecha, lugar | `disciplineId` → disciplines |
-| `staff` | nombre, cargo, telefono | `userId` → users, `disciplineId` → disciplines |
+| `staff` | cargo, telefono | `userId` → users (único), `disciplineId` → disciplines |
 | `messages` | texto, fecha, leido | `remitenteId` → users, `destinatarioId` → users |
 | `audit_logs` | accion, tabla, fecha | `userId` → users |
 | `files` | nombre, url, tipo, fecha | `userId` → users |
+
+Cómo se cumple la 3FN:
+
+- El nombre y el email de socios y personal se guardan solo en `users`; `members` y `staff` los toman por `userId`. Así un dato no queda repetido en dos tablas.
+- Los medios de pago y las categorías de noticias tienen su propia tabla, y las demás tablas guardan solo su `id`.
+- La categoría del socio no se guarda: se calcula con la antigüedad desde `fechaAlta` (Bronce hasta 2 años, Plata de 2 a 10 y Oro más de 10). Guardarla sería repetir un dato que ya sale de otro.
 
 Valores permitidos (enums):
 
@@ -123,8 +131,9 @@ Valores permitidos (enums):
 Reglas al borrar:
 
 - Al borrar un socio se borran sus pagos (`Cascade`).
-- No se puede borrar una disciplina que tenga socios (`Restrict`), ni un usuario que sea autor de noticias.
-- Al borrar un usuario se borran sus mensajes y archivos (`Cascade`), y su ficha de socio, de personal y su registro de cambios quedan sin usuario asociado (`SetNull`).
+- No se puede borrar una disciplina que tenga socios (`Restrict`), ni un medio de pago o una categoría de noticias que estén en uso.
+- No se puede borrar un usuario que tenga ficha de socio o de personal, ni uno que sea autor de noticias (`Restrict`).
+- Al borrar un usuario se borran sus mensajes y archivos (`Cascade`), y su registro de cambios queda sin usuario asociado (`SetNull`).
 
 ## Endpoints
 
