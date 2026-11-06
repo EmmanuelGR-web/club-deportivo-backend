@@ -16,8 +16,7 @@ Comisión: 9
 | [Prisma 7](https://www.prisma.io) | ORM: define las tablas, crea las migraciones y carga los datos de prueba |
 | [PostgreSQL](https://www.postgresql.org) en [Supabase](https://supabase.com) | Base de datos relacional |
 | [@nestjs/config](https://docs.nestjs.com/techniques/configuration) | Lectura de las variables de entorno |
-| [Postman](https://www.postman.com) | Documentación y pruebas de los endpoints |
-
+| [Postman](https://www.postman.com) | Pruebas de los endpoints |
 
 ## Cómo correrlo
 
@@ -41,8 +40,6 @@ Para ver los datos cargados: `npx prisma studio`.
 
 ```
 club-deportivo-backend/
-├── postman/
-│   └── club-deportivo-backend.postman_collection.json
 ├── prisma/
 │   ├── migrations/
 │   ├── schema.prisma
@@ -80,7 +77,6 @@ Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `c
 | Carpeta | Contenido |
 | --- | --- |
 | `prisma/` | Esquema de la base de datos, migraciones y datos de prueba. |
-| `postman/` | Colección de Postman con todos los endpoints. |
 | `src/config/` | Configuración de la aplicación y de la base de datos. |
 | `src/common/` | Decoradores, enums, guards y utilidades compartidos entre módulos. |
 | `src/modules/app/` | Módulo raíz que une a todos los demás. |
@@ -161,21 +157,6 @@ Cada recurso tiene las 5 operaciones del CRUD. Ejemplo con socios:
 | `GET` | `/socios/:id` | Trae un socio por su id |
 | `PATCH` | `/socios/:id` | Modifica un socio |
 | `DELETE` | `/socios/:id` | Elimina un socio |
-
-
-## Postman
-
-La colección está en [`postman/club-deportivo-backend.postman_collection.json`](postman/club-deportivo-backend.postman_collection.json). Tiene una carpeta por recurso con sus 5 peticiones, y los `POST` y `PATCH` traen un cuerpo de ejemplo.
-
-Para usarla:
-
-1. Abrir Postman y hacer clic en **Import**.
-2. Elegir el archivo `club-deportivo-backend.postman_collection.json`.
-3. Levantar la API con `npm run start:dev` y ejecutar las peticiones.
-
-La URL de la API se guarda en la variable de la colección `baseUrl` (`http://localhost:4000`). Si cambia el puerto, se modifica solo ahí.
-
-
 
 ## Repositorios anteriores
 
