@@ -22,7 +22,7 @@ export class ErroresPrismaFilter
 
     if (error.code === 'P2002') {
       respuesta = new ConflictException(
-        'Ya existe un registro con ese dato (email, DNI o nombre repetido).',
+        'Ya existe un registro con ese dato (email, DNI, nombre o un pago del mismo mes).',
       );
     }
 

@@ -14,6 +14,7 @@ enum Rol {
 }
 
 enum EstadoSocio {
+  pendiente
   activo
   moroso
   baja
@@ -23,6 +24,7 @@ enum EstadoPago {
   pagado
   pendiente
   vencido
+  rechazado
 }
 
 model Discipline {
@@ -55,55 +57,70 @@ model NewsCategory {
 }
 
 model User {
-  id                Int        @id @default(autoincrement())
-  nombre            String
-  email             String     @unique
-  contrasena        String
-  rol               Rol        @default(socio)
-  bloqueado         Boolean    @default(false)
-  creadoEn          DateTime   @default(now())
-  member            Member?
-  staff             Staff?
-  news              News[]
-  mensajesEnviados  Message[]  @relation("MensajesEnviados")
-  mensajesRecibidos Message[]  @relation("MensajesRecibidos")
-  auditLogs         AuditLog[]
-  files             File[]
+  id                    Int        @id @default(autoincrement())
+  nombre                String
+  email                 String     @unique
+  contrasena            String
+  rol                   Rol        @default(socio)
+  bloqueado             Boolean    @default(false)
+  debeCambiarContrasena Boolean    @default(false)
+  creadoEn              DateTime   @default(now())
+  member                Member?
+  staff                 Staff?
+  news                  News[]
+  mensajesEnviados      Message[]  @relation("MensajesEnviados")
+  mensajesRecibidos     Message[]  @relation("MensajesRecibidos")
+  auditLogs             AuditLog[]
+  files                 File[]
 
   @@map("users")
 }
 
 model Member {
-  id              Int           @id @default(autoincrement())
-  numeroSocio     Int           @unique
-  dni             String        @unique
-  telefono        String?
-  direccion       String?
-  fechaNacimiento DateTime?     @db.Date
-  estado          EstadoSocio   @default(activo)
-  fechaAlta       DateTime      @default(now()) @db.Date
-  userId          Int           @unique
-  user            User          @relation(fields: [userId], references: [id], onDelete: Restrict)
-  paymentMethodId Int
-  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
-  payments        Payment[]
+  id               Int           @id @default(autoincrement())
+  numeroSocio      Int           @unique
+  dni              String        @unique
+  telefono         String?
+  direccion        String?
+  fechaNacimiento  DateTime?     @db.Date
+  foto             String?
+  fotoActualizada  DateTime?
+  tarjetaEmisor    String?
+  tarjetaRed       String?
+  tarjetaUltimos4  String?
+  debitoAutomatico Boolean       @default(false)
+  altaPresencial   Boolean       @default(false)
+  lecturaIA        Json?
+  estado           EstadoSocio   @default(activo)
+  fechaAlta        DateTime      @default(now()) @db.Date
+  userId           Int           @unique
+  user             User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  paymentMethodId  Int
+  paymentMethod    PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  payments         Payment[]
 
   @@map("members")
 }
 
 model Payment {
-  id              Int           @id @default(autoincrement())
-  concepto        String
-  monto           Decimal       @db.Decimal(10, 2)
-  fecha           DateTime      @db.Date
-  estado          EstadoPago    @default(pendiente)
-  recargo         Decimal       @default(0) @db.Decimal(10, 2)
-  comprobante     String?
-  memberId        Int
-  member          Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  paymentMethodId Int
-  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  id                Int           @id @default(autoincrement())
+  concepto          String
+  periodo           String?
+  monto             Decimal       @db.Decimal(10, 2)
+  fecha             DateTime      @db.Date
+  estado            EstadoPago    @default(pendiente)
+  recargo           Decimal       @default(0) @db.Decimal(10, 2)
+  comprobante       String?
+  comprobanteNombre String?
+  verificacionIA    Json?
+  motivo            String?
+  informadoEl       DateTime      @default(now())
+  memberId          Int
+  member            Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  paymentMethodId   Int
+  paymentMethod     PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
 
+  @@unique([memberId, periodo])
   @@map("payments")
 }
 
