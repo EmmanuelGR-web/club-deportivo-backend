@@ -47,9 +47,12 @@ club-deportivo-backend/
 ├── src/
 │   ├── main.ts
 │   ├── config/
+│   │   ├── prisma.module.ts
+│   │   └── prisma.service.ts
 │   ├── common/
 │   │   ├── decorators/
 │   │   ├── enums/
+│   │   ├── filters/
 │   │   ├── guards/
 │   │   └── utils/
 │   └── modules/
@@ -72,15 +75,15 @@ club-deportivo-backend/
 └── tsconfig.json
 ```
 
-Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `controller`, `service` y `module`, además de `dto/` y `entities/`. Todos están registrados en `AppModule`. Por ahora los servicios devuelven respuestas de prueba
+Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `controller`, `service` y `module`, además de `dto/` y `entities/`. Todos están registrados en `AppModule`. Los servicios leen y guardan en la base con Prisma, a través de `PrismaService`.
 
 | Carpeta | Contenido |
 | --- | --- |
 | `prisma/` | Esquema de la base de datos, migraciones y datos de prueba. |
-| `src/config/` | Configuración de la aplicación y de la base de datos. |
-| `src/common/` | Decoradores, enums, guards y utilidades compartidos entre módulos. |
+| `src/config/` | Conexión con la base de datos (`PrismaService`, disponible en todos los módulos). |
+| `src/common/` | Decoradores, enums, filtros, guards y utilidades compartidos entre módulos. `filters/` traduce los errores de Prisma a respuestas HTTP (409 dato repetido, 404 no existe, 400 relación inválida). |
 | `src/modules/app/` | Módulo raíz que une a todos los demás. |
-| `src/modules/auth/` | Inicio de sesión y estrategias de autenticación. |
+| `src/modules/auth/` | Registro de socios e inicio de sesión. |
 | `src/modules/users/` | Cuentas de usuario y roles. |
 | `src/modules/members/` | Alta, datos y estado de los socios. |
 | `src/modules/payments/` | Cuotas, pagos y comprobantes. |
@@ -102,9 +105,9 @@ La base tiene 12 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.pri
 | `disciplines` | nombre (único), descripcion, imagen, categorias, dias | — |
 | `payment_methods` | nombre (único) | — |
 | `news_categories` | nombre (único) | — |
-| `users` | nombre, email (único), contrasena, rol, bloqueado, creadoEn | — |
-| `members` | numeroSocio (único), dni (único), estado, fechaAlta | `userId` → users (único), `paymentMethodId` → payment_methods |
-| `payments` | concepto, monto, fecha, estado, recargo, comprobante | `memberId` → members, `paymentMethodId` → payment_methods |
+| `users` | nombre, email (único), contrasena, rol, bloqueado, debeCambiarContrasena, creadoEn | — |
+| `members` | numeroSocio (único), dni (único), telefono, direccion, fechaNacimiento, foto, fotoActualizada, tarjetaEmisor, tarjetaRed, tarjetaUltimos4, debitoAutomatico, altaPresencial, lecturaIA, estado, fechaAlta | `userId` → users (único), `paymentMethodId` → payment_methods |
+| `payments` | concepto, periodo (único por socio), monto, fecha, estado, recargo, comprobante, comprobanteNombre, verificacionIA, motivo, informadoEl | `memberId` → members, `paymentMethodId` → payment_methods |
 | `news` | titulo, resumen, cuerpo, imagen, fecha | `userId` → users, `newsCategoryId` → news_categories |
 | `events` | titulo, descripcion, fecha, lugar | `disciplineId` → disciplines |
 | `staff` | cargo, telefono | `userId` → users (único) |
@@ -117,13 +120,15 @@ Cómo se cumple la 3FN:
 - El nombre y el email de socios y personal se guardan solo en `users`; `members` y `staff` los toman por `userId`. Así un dato no queda repetido en dos tablas.
 - Los medios de pago y las categorías de noticias tienen su propia tabla, y las demás tablas guardan solo su `id`.
 - La categoría del socio no se guarda: se calcula con la antigüedad desde `fechaAlta` (Bronce hasta 2 años, Plata de 2 a 10 y Oro más de 10). Guardarla sería repetir un dato que ya sale de otro.
-- La cuota mensual es la misma para todos los socios ($15.000). Las disciplinas son solo informativas: se muestran en la sección de deportes de la página y no se cobran aparte.
+- La cuota mensual es la misma para todos los socios ($15.000). El socio nuevo paga además, por única vez, la inscripción ($15.000): su primer pago es de $30.000. Ese total queda en el `monto` del pago, así que no hace falta otra columna. Las disciplinas son solo informativas: se muestran en la sección de deportes de la página y no se cobran aparte.
 
 Valores permitidos (enums):
 
 - `rol`: `admin`, `personal`, `socio`
-- `estado` del socio: `activo`, `moroso`, `baja`
-- `estado` del pago: `pagado`, `pendiente`, `vencido`
+- `estado` del socio: `pendiente` (se registró y espera que lo autoricen), `activo`, `moroso`, `baja`
+- `estado` del pago: `pagado`, `pendiente` (informado, en revisión), `vencido`, `rechazado`
+
+Las contraseñas se guardan cifradas con bcrypt y ninguna respuesta de la API las devuelve. Usuarios de prueba del seed: `laura.gomez@clubdeportivo.com.ar` / `admin123` (administradora), `pedro.diaz@clubdeportivo.com.ar` / `personal123` (personal) y `jperez@gmail.com` / `socio123` (socio).
 
 Reglas al borrar:
 
@@ -159,6 +164,17 @@ Cada recurso tiene las 5 operaciones del CRUD. Ejemplo con socios:
 | `GET` | `/socios/:id` | Trae un socio por su id |
 | `PATCH` | `/socios/:id` | Modifica un socio |
 | `DELETE` | `/socios/:id` | Elimina un socio |
+
+Rutas extra:
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| `POST` | `/autenticacion/registro` | Crea el usuario y su ficha de socio juntos, con estado `pendiente` (nombre, email, contrasena, dni, paymentMethodId y los datos opcionales del socio) |
+| `POST` | `/autenticacion/login` | Recibe email y contrasena; devuelve el usuario con su ficha de socio o de personal |
+| `GET` | `/noticias/categorias` | Lista las categorías de noticias |
+| `GET` | `/pagos/medios-pago` | Lista los medios de pago (Efectivo, Tarjeta, Transferencia, Billetera virtual, Depósito) |
+
+Los datos se validan con `class-validator`: si algo está mal, la API responde `400` con un mensaje por cada campo. Los campos que no están en el DTO se descartan. CORS está habilitado para que el front (repo 2) pueda consumir la API, y el cuerpo de los pedidos puede pesar hasta 10 MB (fotos y comprobantes en formato data URL). `GET /socios` trae cada socio con su usuario, su medio de pago y sus pagos.
 
 ## Repositorios anteriores
 

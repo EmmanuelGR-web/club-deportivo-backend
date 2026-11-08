@@ -25,6 +25,11 @@ export class PaymentsController {
     return this.pagosService.obtenerTodos();
   }
 
+  @Get('medios-pago')
+  obtenerMediosPago() {
+    return this.pagosService.obtenerMediosPago();
+  }
+
   @Get(':id')
   obtenerUno(@Param('id') id: string) {
     return this.pagosService.obtenerUno(Number(id));

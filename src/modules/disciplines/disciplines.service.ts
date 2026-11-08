@@ -1,26 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../config/prisma.service.js';
 import { CreateDisciplineDto } from './dto/create-discipline.dto.js';
 import { UpdateDisciplineDto } from './dto/update-discipline.dto.js';
 
 @Injectable()
 export class DisciplinesService {
+  constructor(private readonly prisma: PrismaService) {}
+
   crear(datosDisciplina: CreateDisciplineDto) {
-    return 'Se creó una nueva disciplina';
+    return this.prisma.discipline.create({ data: datosDisciplina });
   }
 
   obtenerTodos() {
-    return 'Lista de todas las disciplinas';
+    return this.prisma.discipline.findMany({ orderBy: { id: 'asc' } });
   }
 
-  obtenerUno(id: number) {
-    return `Datos de la disciplina ${id}`;
+  async obtenerUno(id: number) {
+    const disciplina = await this.prisma.discipline.findUnique({
+      where: { id },
+    });
+    if (!disciplina) {
+      throw new NotFoundException(`No existe la disciplina ${id}.`);
+    }
+    return disciplina;
   }
 
   actualizar(id: number, datosDisciplina: UpdateDisciplineDto) {
-    return `Se actualizó la disciplina ${id}`;
+    return this.prisma.discipline.update({
+      where: { id },
+      data: datosDisciplina,
+    });
   }
 
   eliminar(id: number) {
-    return `Se eliminó la disciplina ${id}`;
+    return this.prisma.discipline.delete({ where: { id } });
   }
 }
