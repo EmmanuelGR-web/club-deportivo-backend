@@ -120,7 +120,7 @@ Cómo se cumple la 3FN:
 - El nombre y el email de socios y personal se guardan solo en `users`; `members` y `staff` los toman por `userId`. Así un dato no queda repetido en dos tablas.
 - Los medios de pago y las categorías de noticias tienen su propia tabla, y las demás tablas guardan solo su `id`.
 - La categoría del socio no se guarda: se calcula con la antigüedad desde `fechaAlta` (Bronce hasta 2 años, Plata de 2 a 10 y Oro más de 10). Guardarla sería repetir un dato que ya sale de otro.
-- La cuota mensual es la misma para todos los socios ($15.000). Las disciplinas son solo informativas: se muestran en la sección de deportes de la página y no se cobran aparte.
+- La cuota mensual es la misma para todos los socios ($15.000). El socio nuevo paga además, por única vez, la inscripción ($15.000): su primer pago es de $30.000. Ese total queda en el `monto` del pago, así que no hace falta otra columna. Las disciplinas son solo informativas: se muestran en la sección de deportes de la página y no se cobran aparte.
 
 Valores permitidos (enums):
 
