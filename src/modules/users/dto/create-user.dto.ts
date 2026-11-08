@@ -38,4 +38,10 @@ export class CreateUserDto {
   @IsOptional()
   @IsBoolean({ message: 'Bloqueado debe ser verdadero o falso.' })
   bloqueado?: boolean;
+
+  @IsOptional()
+  @IsBoolean({
+    message: 'Debe cambiar la contraseña debe ser verdadero o falso.',
+  })
+  debeCambiarContrasena?: boolean;
 }

@@ -24,11 +24,11 @@ async function cargarDatos() {
 
   const mediosPago = await prisma.paymentMethod.createManyAndReturn({
     data: [
-      { nombre: 'Transferencia' },
-      { nombre: 'Tarjeta' },
       { nombre: 'Efectivo' },
-      { nombre: 'Mercado Pago' },
-      { nombre: 'Débito automático' },
+      { nombre: 'Tarjeta' },
+      { nombre: 'Transferencia' },
+      { nombre: 'Billetera virtual' },
+      { nombre: 'Depósito' },
     ],
   });
 
@@ -99,19 +99,19 @@ async function cargarDatos() {
     data: [
       {
         nombre: 'Laura Gómez',
-        email: 'admin@clubsanmartin.com',
+        email: 'laura.gomez@clubdeportivo.com.ar',
         contrasena: cifrar('admin123'),
         rol: 'admin',
       },
       {
-        nombre: 'Martín Díaz',
-        email: 'mdiaz@clubsanmartin.com',
+        nombre: 'Pedro Díaz',
+        email: 'pedro.diaz@clubdeportivo.com.ar',
         contrasena: cifrar('personal123'),
         rol: 'personal',
       },
       {
-        nombre: 'Sofía Herrera',
-        email: 'sherrera@clubsanmartin.com',
+        nombre: 'Ana García',
+        email: 'ana.garcia@clubdeportivo.com.ar',
         contrasena: cifrar('personal123'),
         rol: 'personal',
       },
@@ -146,20 +146,20 @@ async function cargarDatos() {
         rol: 'socio',
       },
       {
-        nombre: 'Roberto Medina',
-        email: 'rmedina@clubsanmartin.com',
+        nombre: 'Roberto Díaz',
+        email: 'roberto.diaz@clubdeportivo.com.ar',
         contrasena: cifrar('personal123'),
         rol: 'personal',
       },
       {
-        nombre: 'Lucía Paz',
-        email: 'lpaz@clubsanmartin.com',
+        nombre: 'Silvia Fernández',
+        email: 'silvia.fernandez@clubdeportivo.com.ar',
         contrasena: cifrar('personal123'),
         rol: 'personal',
       },
       {
-        nombre: 'Jorge Vega',
-        email: 'jvega@clubsanmartin.com',
+        nombre: 'Martín Suárez',
+        email: 'martin.suarez@clubdeportivo.com.ar',
         contrasena: cifrar('personal123'),
         rol: 'personal',
       },
@@ -175,6 +175,7 @@ async function cargarDatos() {
         telefono: '381 555-7788',
         direccion: 'Av. Aconquija 1450, Yerba Buena',
         fechaNacimiento: new Date('1990-06-15'),
+        altaPresencial: true,
         userId: usuarios[3].id,
         paymentMethodId: mediosPago[0].id,
       },
@@ -185,6 +186,11 @@ async function cargarDatos() {
         telefono: '381 421-5566',
         direccion: 'Av. Mate de Luna 2150, San Miguel de Tucumán',
         fechaNacimiento: new Date('1985-04-02'),
+        tarjetaEmisor: 'macro',
+        tarjetaRed: 'visa',
+        tarjetaUltimos4: '4242',
+        debitoAutomatico: true,
+        altaPresencial: true,
         userId: usuarios[4].id,
         paymentMethodId: mediosPago[1].id,
       },
@@ -195,6 +201,7 @@ async function cargarDatos() {
         telefono: '381 430-1122',
         direccion: 'Crisóstomo Álvarez 870, San Miguel de Tucumán',
         fechaNacimiento: new Date('1968-09-21'),
+        altaPresencial: true,
         userId: usuarios[5].id,
         paymentMethodId: mediosPago[2].id,
       },
@@ -206,6 +213,7 @@ async function cargarDatos() {
         direccion: 'Santiago del Estero 1540, San Miguel de Tucumán',
         fechaNacimiento: new Date('2003-01-15'),
         estado: 'moroso',
+        altaPresencial: true,
         userId: usuarios[6].id,
         paymentMethodId: mediosPago[3].id,
       },
@@ -217,6 +225,7 @@ async function cargarDatos() {
         direccion: 'Las Piedras 640, San Miguel de Tucumán',
         fechaNacimiento: new Date('1996-06-30'),
         estado: 'baja',
+        altaPresencial: true,
         userId: usuarios[7].id,
         paymentMethodId: mediosPago[4].id,
       },
@@ -227,6 +236,7 @@ async function cargarDatos() {
     data: [
       {
         concepto: 'Cuota octubre',
+        periodo: '2026-10',
         monto: 15000,
         fecha: new Date('2026-10-05'),
         paymentMethodId: mediosPago[0].id,
@@ -236,6 +246,7 @@ async function cargarDatos() {
       },
       {
         concepto: 'Cuota octubre',
+        periodo: '2026-10',
         monto: 15000,
         fecha: new Date('2026-10-07'),
         paymentMethodId: mediosPago[1].id,
@@ -245,6 +256,7 @@ async function cargarDatos() {
       },
       {
         concepto: 'Cuota octubre',
+        periodo: '2026-10',
         monto: 15000,
         fecha: new Date('2026-10-10'),
         paymentMethodId: mediosPago[2].id,
@@ -253,6 +265,7 @@ async function cargarDatos() {
       },
       {
         concepto: 'Cuota septiembre',
+        periodo: '2026-09',
         monto: 15000,
         fecha: new Date('2026-09-25'),
         paymentMethodId: mediosPago[3].id,
@@ -262,6 +275,7 @@ async function cargarDatos() {
       },
       {
         concepto: 'Cuota noviembre',
+        periodo: '2026-11',
         monto: 15000,
         fecha: new Date('2026-11-10'),
         paymentMethodId: mediosPago[0].id,
@@ -355,27 +369,27 @@ async function cargarDatos() {
   await prisma.staff.createMany({
     data: [
       {
-        cargo: 'Entrenador',
+        cargo: 'Administrativo',
         telefono: '3815551001',
         userId: usuarios[1].id,
       },
       {
-        cargo: 'Profesora',
+        cargo: 'Administrativo',
         telefono: '3815551002',
         userId: usuarios[2].id,
       },
       {
-        cargo: 'Preparador físico',
+        cargo: 'Tesorería',
         telefono: '3815551003',
         userId: usuarios[8].id,
       },
       {
-        cargo: 'Entrenadora',
+        cargo: 'Recepción',
         telefono: '3815551004',
         userId: usuarios[9].id,
       },
       {
-        cargo: 'Administrativo',
+        cargo: 'Mantenimiento',
         telefono: '3815551005',
         userId: usuarios[10].id,
       },

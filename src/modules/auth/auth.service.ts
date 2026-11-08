@@ -30,7 +30,9 @@ export class AuthService {
         email: email.toLowerCase(),
         contrasena: await bcrypt.hash(contrasena, 10),
         rol: 'socio',
-        member: { create: { ...datosSocio, numeroSocio } },
+        member: {
+          create: { ...datosSocio, numeroSocio, estado: 'pendiente' },
+        },
       },
       include: datosDelUsuario,
     });

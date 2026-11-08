@@ -3,7 +3,11 @@ import { PrismaService } from '../../config/prisma.service.js';
 import { CreateMemberDto } from './dto/create-member.dto.js';
 import { UpdateMemberDto } from './dto/update-member.dto.js';
 
-const datosRelacionados = { user: true, paymentMethod: true };
+const datosRelacionados = {
+  user: true,
+  paymentMethod: true,
+  payments: { orderBy: { periodo: 'asc' as const } },
+};
 
 @Injectable()
 export class MembersService {

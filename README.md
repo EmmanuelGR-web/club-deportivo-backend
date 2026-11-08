@@ -105,9 +105,9 @@ La base tiene 12 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.pri
 | `disciplines` | nombre (único), descripcion, imagen, categorias, dias | — |
 | `payment_methods` | nombre (único) | — |
 | `news_categories` | nombre (único) | — |
-| `users` | nombre, email (único), contrasena, rol, bloqueado, creadoEn | — |
-| `members` | numeroSocio (único), dni (único), telefono, direccion, fechaNacimiento, estado, fechaAlta | `userId` → users (único), `paymentMethodId` → payment_methods |
-| `payments` | concepto, monto, fecha, estado, recargo, comprobante | `memberId` → members, `paymentMethodId` → payment_methods |
+| `users` | nombre, email (único), contrasena, rol, bloqueado, debeCambiarContrasena, creadoEn | — |
+| `members` | numeroSocio (único), dni (único), telefono, direccion, fechaNacimiento, foto, fotoActualizada, tarjetaEmisor, tarjetaRed, tarjetaUltimos4, debitoAutomatico, altaPresencial, lecturaIA, estado, fechaAlta | `userId` → users (único), `paymentMethodId` → payment_methods |
+| `payments` | concepto, periodo (único por socio), monto, fecha, estado, recargo, comprobante, comprobanteNombre, verificacionIA, motivo, informadoEl | `memberId` → members, `paymentMethodId` → payment_methods |
 | `news` | titulo, resumen, cuerpo, imagen, fecha | `userId` → users, `newsCategoryId` → news_categories |
 | `events` | titulo, descripcion, fecha, lugar | `disciplineId` → disciplines |
 | `staff` | cargo, telefono | `userId` → users (único) |
@@ -125,10 +125,10 @@ Cómo se cumple la 3FN:
 Valores permitidos (enums):
 
 - `rol`: `admin`, `personal`, `socio`
-- `estado` del socio: `activo`, `moroso`, `baja`
-- `estado` del pago: `pagado`, `pendiente`, `vencido`
+- `estado` del socio: `pendiente` (se registró y espera que lo autoricen), `activo`, `moroso`, `baja`
+- `estado` del pago: `pagado`, `pendiente` (informado, en revisión), `vencido`, `rechazado`
 
-Las contraseñas se guardan cifradas con bcrypt y ninguna respuesta de la API las devuelve. Usuarios de prueba del seed: `admin@clubsanmartin.com` / `admin123`, `mdiaz@clubsanmartin.com` / `personal123` y `jperez@gmail.com` / `socio123`.
+Las contraseñas se guardan cifradas con bcrypt y ninguna respuesta de la API las devuelve. Usuarios de prueba del seed: `laura.gomez@clubdeportivo.com.ar` / `admin123` (administradora), `pedro.diaz@clubdeportivo.com.ar` / `personal123` (personal) y `jperez@gmail.com` / `socio123` (socio).
 
 Reglas al borrar:
 
@@ -169,12 +169,12 @@ Rutas extra:
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
-| `POST` | `/autenticacion/registro` | Crea el usuario y su ficha de socio juntos (nombre, email, contrasena, dni, telefono, direccion, fechaNacimiento, paymentMethodId) |
+| `POST` | `/autenticacion/registro` | Crea el usuario y su ficha de socio juntos, con estado `pendiente` (nombre, email, contrasena, dni, paymentMethodId y los datos opcionales del socio) |
 | `POST` | `/autenticacion/login` | Recibe email y contrasena; devuelve el usuario con su ficha de socio o de personal |
 | `GET` | `/noticias/categorias` | Lista las categorías de noticias |
-| `GET` | `/pagos/medios-pago` | Lista los medios de pago |
+| `GET` | `/pagos/medios-pago` | Lista los medios de pago (Efectivo, Tarjeta, Transferencia, Billetera virtual, Depósito) |
 
-Los datos se validan con `class-validator`: si algo está mal, la API responde `400` con un mensaje por cada campo. Los campos que no están en el DTO se descartan. CORS está habilitado para que el front (repo 2) pueda consumir la API.
+Los datos se validan con `class-validator`: si algo está mal, la API responde `400` con un mensaje por cada campo. Los campos que no están en el DTO se descartan. CORS está habilitado para que el front (repo 2) pueda consumir la API, y el cuerpo de los pedidos puede pesar hasta 10 MB (fotos y comprobantes en formato data URL). `GET /socios` trae cada socio con su usuario, su medio de pago y sus pagos.
 
 ## Repositorios anteriores
 
