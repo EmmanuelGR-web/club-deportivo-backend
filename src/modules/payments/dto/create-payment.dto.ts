@@ -1,6 +1,8 @@
+import { EstadoPago } from '../../../generated/prisma/enums.js';
+import { Type } from 'class-transformer';
 import {
-  IsDateString,
-  IsIn,
+  IsDate,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -26,14 +28,15 @@ export class CreatePaymentDto {
   @IsPositive({ message: 'El monto debe ser positivo.' })
   monto: number;
 
-  @IsDateString({}, { message: 'La fecha debe ser una fecha válida.' })
-  fecha: string;
+  @Type(() => Date)
+  @IsDate({ message: 'La fecha debe ser una fecha válida.' })
+  fecha: Date;
 
   @IsOptional()
-  @IsIn(['pagado', 'pendiente', 'vencido'], {
+  @IsEnum(EstadoPago, {
     message: 'El estado debe ser pagado, pendiente o vencido.',
   })
-  estado?: string;
+  estado?: EstadoPago;
 
   @IsOptional()
   @IsNumber(

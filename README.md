@@ -47,9 +47,12 @@ club-deportivo-backend/
 ├── src/
 │   ├── main.ts
 │   ├── config/
+│   │   ├── prisma.module.ts
+│   │   └── prisma.service.ts
 │   ├── common/
 │   │   ├── decorators/
 │   │   ├── enums/
+│   │   ├── filters/
 │   │   ├── guards/
 │   │   └── utils/
 │   └── modules/
@@ -72,15 +75,15 @@ club-deportivo-backend/
 └── tsconfig.json
 ```
 
-Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `controller`, `service` y `module`, además de `dto/` y `entities/`. Todos están registrados en `AppModule`. Por ahora los servicios devuelven respuestas de prueba
+Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `controller`, `service` y `module`, además de `dto/` y `entities/`. Todos están registrados en `AppModule`. Los servicios leen y guardan en la base con Prisma, a través de `PrismaService`.
 
 | Carpeta | Contenido |
 | --- | --- |
 | `prisma/` | Esquema de la base de datos, migraciones y datos de prueba. |
-| `src/config/` | Configuración de la aplicación y de la base de datos. |
-| `src/common/` | Decoradores, enums, guards y utilidades compartidos entre módulos. |
+| `src/config/` | Conexión con la base de datos (`PrismaService`, disponible en todos los módulos). |
+| `src/common/` | Decoradores, enums, filtros, guards y utilidades compartidos entre módulos. `filters/` traduce los errores de Prisma a respuestas HTTP (409 dato repetido, 404 no existe, 400 relación inválida). |
 | `src/modules/app/` | Módulo raíz que une a todos los demás. |
-| `src/modules/auth/` | Inicio de sesión y estrategias de autenticación. |
+| `src/modules/auth/` | Registro de socios e inicio de sesión. |
 | `src/modules/users/` | Cuentas de usuario y roles. |
 | `src/modules/members/` | Alta, datos y estado de los socios. |
 | `src/modules/payments/` | Cuotas, pagos y comprobantes. |
@@ -103,7 +106,7 @@ La base tiene 12 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.pri
 | `payment_methods` | nombre (único) | — |
 | `news_categories` | nombre (único) | — |
 | `users` | nombre, email (único), contrasena, rol, bloqueado, creadoEn | — |
-| `members` | numeroSocio (único), dni (único), estado, fechaAlta | `userId` → users (único), `paymentMethodId` → payment_methods |
+| `members` | numeroSocio (único), dni (único), telefono, direccion, fechaNacimiento, estado, fechaAlta | `userId` → users (único), `paymentMethodId` → payment_methods |
 | `payments` | concepto, monto, fecha, estado, recargo, comprobante | `memberId` → members, `paymentMethodId` → payment_methods |
 | `news` | titulo, resumen, cuerpo, imagen, fecha | `userId` → users, `newsCategoryId` → news_categories |
 | `events` | titulo, descripcion, fecha, lugar | `disciplineId` → disciplines |
@@ -124,6 +127,8 @@ Valores permitidos (enums):
 - `rol`: `admin`, `personal`, `socio`
 - `estado` del socio: `activo`, `moroso`, `baja`
 - `estado` del pago: `pagado`, `pendiente`, `vencido`
+
+Las contraseñas se guardan cifradas con bcrypt y ninguna respuesta de la API las devuelve. Usuarios de prueba del seed: `admin@clubsanmartin.com` / `admin123`, `mdiaz@clubsanmartin.com` / `personal123` y `jperez@gmail.com` / `socio123`.
 
 Reglas al borrar:
 
@@ -159,6 +164,17 @@ Cada recurso tiene las 5 operaciones del CRUD. Ejemplo con socios:
 | `GET` | `/socios/:id` | Trae un socio por su id |
 | `PATCH` | `/socios/:id` | Modifica un socio |
 | `DELETE` | `/socios/:id` | Elimina un socio |
+
+Rutas extra:
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| `POST` | `/autenticacion/registro` | Crea el usuario y su ficha de socio juntos (nombre, email, contrasena, dni, telefono, direccion, fechaNacimiento, paymentMethodId) |
+| `POST` | `/autenticacion/login` | Recibe email y contrasena; devuelve el usuario con su ficha de socio o de personal |
+| `GET` | `/noticias/categorias` | Lista las categorías de noticias |
+| `GET` | `/pagos/medios-pago` | Lista los medios de pago |
+
+Los datos se validan con `class-validator`: si algo está mal, la API responde `400` con un mensaje por cada campo. Los campos que no están en el DTO se descartan. CORS está habilitado para que el front (repo 2) pueda consumir la API.
 
 ## Repositorios anteriores
 

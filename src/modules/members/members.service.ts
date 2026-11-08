@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../config/prisma.service.js';
 import { CreateMemberDto } from './dto/create-member.dto.js';
 import { UpdateMemberDto } from './dto/update-member.dto.js';
 
+const datosRelacionados = { user: true, paymentMethod: true };
+
 @Injectable()
 export class MembersService {
+  constructor(private readonly prisma: PrismaService) {}
+
   crear(datosSocio: CreateMemberDto) {
-    return 'Se creó un nuevo socio';
+    return this.prisma.member.create({
+      data: datosSocio,
+      include: datosRelacionados,
+    });
   }
 
   obtenerTodos() {
-    return 'Lista de todos los socios';
+    return this.prisma.member.findMany({
+      include: datosRelacionados,
+      orderBy: { numeroSocio: 'asc' },
+    });
   }
 
-  obtenerUno(id: number) {
-    return `Datos del socio ${id}`;
+  async obtenerUno(id: number) {
+    const socio = await this.prisma.member.findUnique({
+      where: { id },
+      include: datosRelacionados,
+    });
+    if (!socio) {
+      throw new NotFoundException(`No existe el socio ${id}.`);
+    }
+    return socio;
   }
 
   actualizar(id: number, datosSocio: UpdateMemberDto) {
-    return `Se actualizó el socio ${id}`;
+    return this.prisma.member.update({
+      where: { id },
+      data: datosSocio,
+      include: datosRelacionados,
+    });
   }
 
   eliminar(id: number) {
-    return `Se eliminó el socio ${id}`;
+    return this.prisma.member.delete({ where: { id } });
   }
 }

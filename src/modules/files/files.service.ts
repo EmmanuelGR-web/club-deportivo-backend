@@ -1,26 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../config/prisma.service.js';
 import { CreateFileDto } from './dto/create-file.dto.js';
 import { UpdateFileDto } from './dto/update-file.dto.js';
 
 @Injectable()
 export class FilesService {
+  constructor(private readonly prisma: PrismaService) {}
+
   crear(datosArchivo: CreateFileDto) {
-    return 'Se creó un nuevo archivo';
+    return this.prisma.file.create({ data: datosArchivo });
   }
 
   obtenerTodos() {
-    return 'Lista de todos los archivos';
+    return this.prisma.file.findMany({ orderBy: { fecha: 'desc' } });
   }
 
-  obtenerUno(id: number) {
-    return `Datos del archivo ${id}`;
+  async obtenerUno(id: number) {
+    const archivo = await this.prisma.file.findUnique({ where: { id } });
+    if (!archivo) {
+      throw new NotFoundException(`No existe el archivo ${id}.`);
+    }
+    return archivo;
   }
 
   actualizar(id: number, datosArchivo: UpdateFileDto) {
-    return `Se actualizó el archivo ${id}`;
+    return this.prisma.file.update({ where: { id }, data: datosArchivo });
   }
 
   eliminar(id: number) {
-    return `Se eliminó el archivo ${id}`;
+    return this.prisma.file.delete({ where: { id } });
   }
 }
