@@ -1,7 +1,8 @@
+import { Rol } from '../../../generated/prisma/enums.js';
 import {
   IsBoolean,
   IsEmail,
-  IsIn,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -29,10 +30,10 @@ export class CreateUserDto {
   contrasena: string;
 
   @IsOptional()
-  @IsIn(['admin', 'personal', 'socio'], {
+  @IsEnum(Rol, {
     message: 'El rol debe ser admin, personal o socio.',
   })
-  rol?: string;
+  rol?: Rol;
 
   @IsOptional()
   @IsBoolean({ message: 'Bloqueado debe ser verdadero o falso.' })

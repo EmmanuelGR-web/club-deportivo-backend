@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../config/prisma.service.js';
 import { CreateNewsDto } from './dto/create-news.dto.js';
 import { UpdateNewsDto } from './dto/update-news.dto.js';
 
+const datosRelacionados = { newsCategory: true, user: true };
+
 @Injectable()
 export class NewsService {
+  constructor(private readonly prisma: PrismaService) {}
+
   crear(datosNoticia: CreateNewsDto) {
-    return 'Se creó una nueva noticia';
+    return this.prisma.news.create({
+      data: datosNoticia,
+      include: datosRelacionados,
+    });
   }
 
   obtenerTodos() {
-    return 'Lista de todas las noticias';
+    return this.prisma.news.findMany({
+      include: datosRelacionados,
+      orderBy: { fecha: 'desc' },
+    });
   }
 
-  obtenerUno(id: number) {
-    return `Datos de la noticia ${id}`;
+  obtenerCategorias() {
+    return this.prisma.newsCategory.findMany({ orderBy: { id: 'asc' } });
+  }
+
+  async obtenerUno(id: number) {
+    const noticia = await this.prisma.news.findUnique({
+      where: { id },
+      include: datosRelacionados,
+    });
+    if (!noticia) {
+      throw new NotFoundException(`No existe la noticia ${id}.`);
+    }
+    return noticia;
   }
 
   actualizar(id: number, datosNoticia: UpdateNewsDto) {
-    return `Se actualizó la noticia ${id}`;
+    return this.prisma.news.update({
+      where: { id },
+      data: datosNoticia,
+      include: datosRelacionados,
+    });
   }
 
   eliminar(id: number) {
-    return `Se eliminó la noticia ${id}`;
+    return this.prisma.news.delete({ where: { id } });
   }
 }

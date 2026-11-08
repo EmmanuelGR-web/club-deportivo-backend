@@ -1,5 +1,6 @@
+import { Type } from 'class-transformer';
 import {
-  IsDateString,
+  IsDate,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -23,8 +24,9 @@ export class CreateEventDto {
   })
   descripcion?: string;
 
-  @IsDateString({}, { message: 'La fecha debe ser una fecha válida.' })
-  fecha: string;
+  @Type(() => Date)
+  @IsDate({ message: 'La fecha debe ser una fecha válida.' })
+  fecha: Date;
 
   @IsString({ message: 'El lugar debe ser un texto.' })
   @IsNotEmpty({ message: 'El lugar es obligatorio.' })

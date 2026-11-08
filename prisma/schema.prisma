@@ -77,6 +77,9 @@ model Member {
   id              Int           @id @default(autoincrement())
   numeroSocio     Int           @unique
   dni             String        @unique
+  telefono        String?
+  direccion       String?
+  fechaNacimiento DateTime?     @db.Date
   estado          EstadoSocio   @default(activo)
   fechaAlta       DateTime      @default(now()) @db.Date
   userId          Int           @unique

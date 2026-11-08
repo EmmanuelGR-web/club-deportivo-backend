@@ -1,9 +1,12 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
+import bcrypt from 'bcryptjs';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 
 const adaptador = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter: adaptador });
+
+const cifrar = (contrasena: string) => bcrypt.hashSync(contrasena, 10);
 
 async function cargarDatos() {
   await prisma.message.deleteMany();
@@ -97,67 +100,67 @@ async function cargarDatos() {
       {
         nombre: 'Laura Gómez',
         email: 'admin@clubsanmartin.com',
-        contrasena: 'admin123',
+        contrasena: cifrar('admin123'),
         rol: 'admin',
       },
       {
         nombre: 'Martín Díaz',
         email: 'mdiaz@clubsanmartin.com',
-        contrasena: 'personal123',
+        contrasena: cifrar('personal123'),
         rol: 'personal',
       },
       {
         nombre: 'Sofía Herrera',
         email: 'sherrera@clubsanmartin.com',
-        contrasena: 'personal123',
+        contrasena: cifrar('personal123'),
         rol: 'personal',
       },
       {
         nombre: 'Juan Pérez',
         email: 'jperez@gmail.com',
-        contrasena: 'socio123',
+        contrasena: cifrar('socio123'),
         rol: 'socio',
       },
       {
         nombre: 'Ana López',
         email: 'alopez@gmail.com',
-        contrasena: 'socio123',
+        contrasena: cifrar('socio123'),
         rol: 'socio',
       },
       {
         nombre: 'Carlos Ruiz',
         email: 'cruiz@gmail.com',
-        contrasena: 'socio123',
+        contrasena: cifrar('socio123'),
         rol: 'socio',
       },
       {
         nombre: 'Valentina Sosa',
         email: 'vsosa@gmail.com',
-        contrasena: 'socio123',
+        contrasena: cifrar('socio123'),
         rol: 'socio',
       },
       {
         nombre: 'Diego Romero',
         email: 'dromero@gmail.com',
-        contrasena: 'socio123',
+        contrasena: cifrar('socio123'),
         rol: 'socio',
       },
       {
         nombre: 'Roberto Medina',
         email: 'rmedina@clubsanmartin.com',
-        contrasena: 'personal123',
+        contrasena: cifrar('personal123'),
         rol: 'personal',
       },
       {
         nombre: 'Lucía Paz',
         email: 'lpaz@clubsanmartin.com',
-        contrasena: 'personal123',
+        contrasena: cifrar('personal123'),
         rol: 'personal',
       },
       {
         nombre: 'Jorge Vega',
         email: 'jvega@clubsanmartin.com',
-        contrasena: 'personal123',
+        contrasena: cifrar('personal123'),
         rol: 'personal',
       },
     ],
@@ -169,6 +172,9 @@ async function cargarDatos() {
         numeroSocio: 1001,
         fechaAlta: new Date('2025-03-10'),
         dni: '40123456',
+        telefono: '381 555-7788',
+        direccion: 'Av. Aconquija 1450, Yerba Buena',
+        fechaNacimiento: new Date('1990-06-15'),
         userId: usuarios[3].id,
         paymentMethodId: mediosPago[0].id,
       },
@@ -176,6 +182,9 @@ async function cargarDatos() {
         numeroSocio: 1002,
         fechaAlta: new Date('2020-06-15'),
         dni: '41234567',
+        telefono: '381 421-5566',
+        direccion: 'Av. Mate de Luna 2150, San Miguel de Tucumán',
+        fechaNacimiento: new Date('1985-04-02'),
         userId: usuarios[4].id,
         paymentMethodId: mediosPago[1].id,
       },
@@ -183,6 +192,9 @@ async function cargarDatos() {
         numeroSocio: 1003,
         fechaAlta: new Date('1998-04-01'),
         dni: '38345678',
+        telefono: '381 430-1122',
+        direccion: 'Crisóstomo Álvarez 870, San Miguel de Tucumán',
+        fechaNacimiento: new Date('1968-09-21'),
         userId: usuarios[5].id,
         paymentMethodId: mediosPago[2].id,
       },
@@ -190,6 +202,9 @@ async function cargarDatos() {
         numeroSocio: 1004,
         fechaAlta: new Date('2024-09-20'),
         dni: '45456789',
+        telefono: '381 512-7788',
+        direccion: 'Santiago del Estero 1540, San Miguel de Tucumán',
+        fechaNacimiento: new Date('2003-01-15'),
         estado: 'moroso',
         userId: usuarios[6].id,
         paymentMethodId: mediosPago[3].id,
@@ -198,6 +213,9 @@ async function cargarDatos() {
         numeroSocio: 1005,
         fechaAlta: new Date('2012-02-05'),
         dni: '39567890',
+        telefono: '381 655-9021',
+        direccion: 'Las Piedras 640, San Miguel de Tucumán',
+        fechaNacimiento: new Date('1996-06-30'),
         estado: 'baja',
         userId: usuarios[7].id,
         paymentMethodId: mediosPago[4].id,

@@ -25,6 +25,11 @@ export class NewsController {
     return this.noticiasService.obtenerTodos();
   }
 
+  @Get('categorias')
+  obtenerCategorias() {
+    return this.noticiasService.obtenerCategorias();
+  }
+
   @Get(':id')
   obtenerUno(@Param('id') id: string) {
     return this.noticiasService.obtenerUno(Number(id));

@@ -1,5 +1,6 @@
+import { Type } from 'class-transformer';
 import {
-  IsDateString,
+  IsDate,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -32,8 +33,9 @@ export class CreateNewsDto {
   imagen?: string;
 
   @IsOptional()
-  @IsDateString({}, { message: 'La fecha debe ser una fecha válida.' })
-  fecha?: string;
+  @Type(() => Date)
+  @IsDate({ message: 'La fecha debe ser una fecha válida.' })
+  fecha?: Date;
 
   @IsInt({ message: 'El autor debe ser un número entero.' })
   @IsPositive({ message: 'El autor debe ser positivo.' })
