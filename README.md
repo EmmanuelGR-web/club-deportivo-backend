@@ -102,7 +102,7 @@ La base tiene 12 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.pri
 
 | Tabla | Columnas principales | Claves foráneas |
 | --- | --- | --- |
-| `disciplines` | nombre (único), descripcion, imagen, categorias, dias | — |
+| `disciplines` | nombre (único), descripcion, imagen | — |
 | `payment_methods` | nombre (único) | — |
 | `news_categories` | nombre (único) | — |
 | `users` | nombre, email (único), contrasena, rol, bloqueado, debeCambiarContrasena, creadoEn | — |

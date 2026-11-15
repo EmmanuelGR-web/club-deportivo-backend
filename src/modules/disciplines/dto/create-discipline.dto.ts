@@ -23,16 +23,4 @@ export class CreateDisciplineDto {
   @IsOptional()
   @IsString({ message: 'La imagen debe ser un texto.' })
   imagen?: string;
-
-  @IsOptional()
-  @IsString({ message: 'Las categorías deben ser un texto.' })
-  @MaxLength(200, {
-    message: 'Las categorías no pueden superar los 200 caracteres.',
-  })
-  categorias?: string;
-
-  @IsOptional()
-  @IsString({ message: 'Los días deben ser un texto.' })
-  @MaxLength(200, { message: 'Los días no pueden superar los 200 caracteres.' })
-  dias?: string;
 }

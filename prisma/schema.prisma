@@ -32,8 +32,6 @@ model Discipline {
   nombre      String  @unique
   descripcion String?
   imagen      String?
-  categorias  String?
-  dias        String?
   events      Event[]
 
   @@map("disciplines")
