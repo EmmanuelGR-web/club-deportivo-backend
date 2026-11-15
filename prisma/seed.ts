@@ -49,48 +49,36 @@ async function cargarDatos() {
         descripcion:
           'Categorías desde infantiles hasta primera división, con los profes de la escuela del club.',
         imagen: '/disciplinas/futbol.jpg',
-        categorias: 'Infantiles (5 a 12) · Juveniles · Primera',
-        dias: 'Lunes a viernes, de 17 a 20 h',
       },
       {
         nombre: 'Básquet',
         descripcion:
           'Mini, formativas y primera, masculino y femenino, en el estadio cubierto.',
         imagen: '/disciplinas/basquet.jpeg',
-        categorias: 'Mini (6 a 12) · Formativas · Primera',
-        dias: 'Lunes, miércoles y viernes, de 18 a 21 h',
       },
       {
         nombre: 'Vóley',
         descripcion:
           'El equipo femenino juega la final del Apertura. También hay categorías mixtas.',
         imagen: '/disciplinas/voley.jpg',
-        categorias: 'Sub-12 · Sub-16 · Primera femenina',
-        dias: 'Martes y jueves, de 18 a 21 h',
       },
       {
         nombre: 'Hockey',
         descripcion:
           'Una de las ramas con más jugadoras de la provincia, en cancha sintética.',
         imagen: '/disciplinas/hockey.jpg',
-        categorias: 'Sub-8 a Primera · Mamis hockey',
-        dias: 'Martes, jueves y sábados',
       },
       {
         nombre: 'Natación',
         descripcion:
           'Escuela de natación y equipo de competición en la pileta climatizada.',
         imagen: '/disciplinas/natacion.jpg',
-        categorias: 'Escuelita (4 a 10) · Competición · Adultos',
-        dias: 'Lunes a sábado, turnos de 8 a 21 h',
       },
       {
         nombre: 'Tenis',
         descripcion:
           'Clases grupales e individuales en canchas de polvo de ladrillo.',
         imagen: '/disciplinas/tenis.jpeg',
-        categorias: 'Infantiles · Juveniles · Adultos',
-        dias: 'Todos los días, con turno previo',
       },
     ],
   });

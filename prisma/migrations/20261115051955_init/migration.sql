@@ -2,19 +2,35 @@
 CREATE TYPE "Rol" AS ENUM ('admin', 'personal', 'socio');
 
 -- CreateEnum
-CREATE TYPE "EstadoSocio" AS ENUM ('activo', 'moroso', 'baja');
+CREATE TYPE "EstadoSocio" AS ENUM ('pendiente', 'activo', 'moroso', 'baja');
 
 -- CreateEnum
-CREATE TYPE "EstadoPago" AS ENUM ('pagado', 'pendiente', 'vencido');
+CREATE TYPE "EstadoPago" AS ENUM ('pagado', 'pendiente', 'vencido', 'rechazado');
 
 -- CreateTable
 CREATE TABLE "disciplines" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
     "descripcion" TEXT,
-    "cuotaMensual" DECIMAL(10,2) NOT NULL,
+    "imagen" TEXT,
 
     CONSTRAINT "disciplines_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "payment_methods" (
+    "id" SERIAL NOT NULL,
+    "nombre" TEXT NOT NULL,
+
+    CONSTRAINT "payment_methods_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "news_categories" (
+    "id" SERIAL NOT NULL,
+    "nombre" TEXT NOT NULL,
+
+    CONSTRAINT "news_categories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -25,6 +41,7 @@ CREATE TABLE "users" (
     "contrasena" TEXT NOT NULL,
     "rol" "Rol" NOT NULL DEFAULT 'socio',
     "bloqueado" BOOLEAN NOT NULL DEFAULT false,
+    "debeCambiarContrasena" BOOLEAN NOT NULL DEFAULT false,
     "creadoEn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
@@ -34,15 +51,22 @@ CREATE TABLE "users" (
 CREATE TABLE "members" (
     "id" SERIAL NOT NULL,
     "numeroSocio" INTEGER NOT NULL,
-    "nombre" TEXT NOT NULL,
     "dni" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "categoria" TEXT NOT NULL,
+    "telefono" TEXT,
+    "direccion" TEXT,
+    "fechaNacimiento" DATE,
+    "foto" TEXT,
+    "fotoActualizada" TIMESTAMP(3),
+    "tarjetaEmisor" TEXT,
+    "tarjetaRed" TEXT,
+    "tarjetaUltimos4" TEXT,
+    "debitoAutomatico" BOOLEAN NOT NULL DEFAULT false,
+    "altaPresencial" BOOLEAN NOT NULL DEFAULT false,
+    "lecturaIA" JSONB,
     "estado" "EstadoSocio" NOT NULL DEFAULT 'activo',
-    "medioPago" TEXT NOT NULL,
     "fechaAlta" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "userId" INTEGER,
-    "disciplineId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "paymentMethodId" INTEGER NOT NULL,
 
     CONSTRAINT "members_pkey" PRIMARY KEY ("id")
 );
@@ -51,13 +75,18 @@ CREATE TABLE "members" (
 CREATE TABLE "payments" (
     "id" SERIAL NOT NULL,
     "concepto" TEXT NOT NULL,
+    "periodo" TEXT,
     "monto" DECIMAL(10,2) NOT NULL,
     "fecha" DATE NOT NULL,
-    "medio" TEXT NOT NULL,
     "estado" "EstadoPago" NOT NULL DEFAULT 'pendiente',
     "recargo" DECIMAL(10,2) NOT NULL DEFAULT 0,
     "comprobante" TEXT,
+    "comprobanteNombre" TEXT,
+    "verificacionIA" JSONB,
+    "motivo" TEXT,
+    "informadoEl" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "memberId" INTEGER NOT NULL,
+    "paymentMethodId" INTEGER NOT NULL,
 
     CONSTRAINT "payments_pkey" PRIMARY KEY ("id")
 );
@@ -68,10 +97,10 @@ CREATE TABLE "news" (
     "titulo" TEXT NOT NULL,
     "resumen" TEXT NOT NULL,
     "cuerpo" TEXT NOT NULL,
-    "categoria" TEXT NOT NULL,
     "imagen" TEXT,
     "fecha" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" INTEGER NOT NULL,
+    "newsCategoryId" INTEGER NOT NULL,
 
     CONSTRAINT "news_pkey" PRIMARY KEY ("id")
 );
@@ -91,11 +120,9 @@ CREATE TABLE "events" (
 -- CreateTable
 CREATE TABLE "staff" (
     "id" SERIAL NOT NULL,
-    "nombre" TEXT NOT NULL,
     "cargo" TEXT NOT NULL,
     "telefono" TEXT,
-    "userId" INTEGER,
-    "disciplineId" INTEGER,
+    "userId" INTEGER NOT NULL,
 
     CONSTRAINT "staff_pkey" PRIMARY KEY ("id")
 );
@@ -139,6 +166,12 @@ CREATE TABLE "files" (
 CREATE UNIQUE INDEX "disciplines_nombre_key" ON "disciplines"("nombre");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "payment_methods_nombre_key" ON "payment_methods"("nombre");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "news_categories_nombre_key" ON "news_categories"("nombre");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
@@ -151,28 +184,34 @@ CREATE UNIQUE INDEX "members_dni_key" ON "members"("dni");
 CREATE UNIQUE INDEX "members_userId_key" ON "members"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "payments_memberId_periodo_key" ON "payments"("memberId", "periodo");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "staff_userId_key" ON "staff"("userId");
 
 -- AddForeignKey
-ALTER TABLE "members" ADD CONSTRAINT "members_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "members" ADD CONSTRAINT "members_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "members" ADD CONSTRAINT "members_disciplineId_fkey" FOREIGN KEY ("disciplineId") REFERENCES "disciplines"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "members" ADD CONSTRAINT "members_paymentMethodId_fkey" FOREIGN KEY ("paymentMethodId") REFERENCES "payment_methods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "payments" ADD CONSTRAINT "payments_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "members"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "payments" ADD CONSTRAINT "payments_paymentMethodId_fkey" FOREIGN KEY ("paymentMethodId") REFERENCES "payment_methods"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "news" ADD CONSTRAINT "news_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "news" ADD CONSTRAINT "news_newsCategoryId_fkey" FOREIGN KEY ("newsCategoryId") REFERENCES "news_categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "events" ADD CONSTRAINT "events_disciplineId_fkey" FOREIGN KEY ("disciplineId") REFERENCES "disciplines"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "staff" ADD CONSTRAINT "staff_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "staff" ADD CONSTRAINT "staff_disciplineId_fkey" FOREIGN KEY ("disciplineId") REFERENCES "disciplines"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "staff" ADD CONSTRAINT "staff_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "messages" ADD CONSTRAINT "messages_remitenteId_fkey" FOREIGN KEY ("remitenteId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
