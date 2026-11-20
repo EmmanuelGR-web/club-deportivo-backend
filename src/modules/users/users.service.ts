@@ -1,19 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
-import { PrismaService } from '../../config/prisma.service.js';
-import { CreateUserDto } from './dto/create-user.dto.js';
+import bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
-
-  async crear(datosUsuario: CreateUserDto) {
-    const contrasenaCifrada = await bcrypt.hash(datosUsuario.contrasena, 10);
-    return this.prisma.user.create({
-      data: { ...datosUsuario, contrasena: contrasenaCifrada },
-    });
-  }
 
   obtenerTodos() {
     return this.prisma.user.findMany({ orderBy: { id: 'asc' } });

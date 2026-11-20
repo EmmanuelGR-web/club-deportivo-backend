@@ -3,8 +3,9 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
-import { PrismaService } from '../../config/prisma.service.js';
+import { JwtService } from '@nestjs/jwt';
+import bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service.js';
 import { LoginAuthDto } from './dto/login-auth.dto.js';
 import { RegistroAuthDto } from './dto/registro-auth.dto.js';
 
@@ -15,7 +16,10 @@ const datosDelUsuario = {
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async registrar(datosRegistro: RegistroAuthDto) {
     const { nombre, email, contrasena, ...datosSocio } = datosRegistro;
@@ -54,9 +58,17 @@ export class AuthService {
       throw new ForbiddenException('El usuario está bloqueado.');
     }
 
-    return this.prisma.user.findUnique({
+    const token = await this.jwtService.signAsync({
+      sub: usuario.id,
+      email: usuario.email,
+      rol: usuario.rol,
+    });
+
+    const datosUsuario = await this.prisma.user.findUnique({
       where: { id: usuario.id },
       include: datosDelUsuario,
     });
+
+    return { access_token: token, usuario: datosUsuario };
   }
 }

@@ -16,6 +16,8 @@ Comisión: 9
 | [Prisma 7](https://www.prisma.io) | ORM: define las tablas, crea las migraciones y carga los datos de prueba |
 | [PostgreSQL](https://www.postgresql.org) en [Supabase](https://supabase.com) | Base de datos relacional |
 | [@nestjs/config](https://docs.nestjs.com/techniques/configuration) | Lectura de las variables de entorno |
+| [@nestjs/jwt](https://docs.nestjs.com/security/authentication) | Genera el token (JWT) al iniciar sesión |
+| [bcrypt](https://www.npmjs.com/package/bcrypt) | Cifra y compara las contraseñas |
 | [Postman](https://www.postman.com) | Pruebas de los endpoints |
 
 ## Cómo correrlo
@@ -46,17 +48,11 @@ club-deportivo-backend/
 │   └── seed.ts
 ├── src/
 │   ├── main.ts
-│   ├── config/
-│   │   ├── prisma.module.ts
-│   │   └── prisma.service.ts
 │   ├── common/
-│   │   ├── decorators/
-│   │   ├── enums/
-│   │   ├── filters/
-│   │   ├── guards/
-│   │   └── utils/
+│   │   └── filters/
 │   └── modules/
 │       ├── app/
+│       ├── prisma/
 │       ├── auth/
 │       ├── users/
 │       ├── members/
@@ -80,9 +76,9 @@ Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `c
 | Carpeta | Contenido |
 | --- | --- |
 | `prisma/` | Esquema de la base de datos, migraciones y datos de prueba. |
-| `src/config/` | Conexión con la base de datos (`PrismaService`, disponible en todos los módulos). |
-| `src/common/` | Decoradores, enums, filtros, guards y utilidades compartidos entre módulos. `filters/` traduce los errores de Prisma a respuestas HTTP (409 dato repetido, 404 no existe, 400 relación inválida). |
+| `src/common/filters/` | Traduce los errores de Prisma a respuestas HTTP (409 dato repetido, 404 no existe, 400 relación inválida) para toda la API. |
 | `src/modules/app/` | Módulo raíz que une a todos los demás. |
+| `src/modules/prisma/` | Conexión con la base de datos (`PrismaService`, disponible en todos los módulos). |
 | `src/modules/auth/` | Registro de socios e inicio de sesión. |
 | `src/modules/users/` | Cuentas de usuario y roles. |
 | `src/modules/members/` | Alta, datos y estado de los socios. |
@@ -98,7 +94,7 @@ Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `c
 
 ## Base de datos
 
-La base tiene 12 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.prisma) y normalizadas hasta la tercera forma normal (3FN). Todas usan `id` autoincremental como clave primaria y tienen al menos 5 registros de prueba.
+La base tiene 12 tablas, definidas en [`prisma/schema.prisma`](prisma/schema.prisma) y normalizadas hasta la tercera forma normal (3FN).
 
 | Tabla | Columnas principales | Claves foráneas |
 | --- | --- | --- |
@@ -155,7 +151,7 @@ URL base: `http://localhost:4000`
 | Registro de cambios | `/registro-cambios` |
 | Archivos | `/archivos` |
 
-Cada recurso tiene las 5 operaciones del CRUD. Ejemplo con socios:
+Cada recurso tiene las 5 operaciones del CRUD (menos `/usuarios`, que no tiene `POST` porque los usuarios se crean con el registro). Ejemplo con socios:
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
@@ -169,8 +165,8 @@ Rutas extra:
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
-| `POST` | `/autenticacion/registro` | Crea el usuario y su ficha de socio juntos, con estado `pendiente` (nombre, email, contrasena, dni, paymentMethodId y los datos opcionales del socio) |
-| `POST` | `/autenticacion/login` | Recibe email y contrasena; devuelve el usuario con su ficha de socio o de personal |
+| `POST` | `/autenticacion/registro` | Crea el usuario y su ficha de socio juntos, con estado `pendiente` (nombre, email, contrasena, dni, paymentMethodId y los datos opcionales del socio). Es la única ruta que crea usuarios: `/usuarios` no tiene `POST` |
+| `POST` | `/autenticacion/login` | Recibe email y contrasena; devuelve `access_token` (JWT válido por 1 hora) y `usuario` con su ficha de socio o de personal |
 | `GET` | `/noticias/categorias` | Lista las categorías de noticias |
 | `GET` | `/pagos/medios-pago` | Lista los medios de pago (Efectivo, Tarjeta, Transferencia, Billetera virtual, Depósito) |
 
