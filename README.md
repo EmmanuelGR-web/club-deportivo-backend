@@ -48,17 +48,11 @@ club-deportivo-backend/
 │   └── seed.ts
 ├── src/
 │   ├── main.ts
-│   ├── config/
-│   │   ├── prisma.module.ts
-│   │   └── prisma.service.ts
 │   ├── common/
-│   │   ├── decorators/
-│   │   ├── enums/
-│   │   ├── filters/
-│   │   ├── guards/
-│   │   └── utils/
+│   │   └── filters/
 │   └── modules/
 │       ├── app/
+│       ├── prisma/
 │       ├── auth/
 │       ├── users/
 │       ├── members/
@@ -82,9 +76,9 @@ Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `c
 | Carpeta | Contenido |
 | --- | --- |
 | `prisma/` | Esquema de la base de datos, migraciones y datos de prueba. |
-| `src/config/` | Conexión con la base de datos (`PrismaService`, disponible en todos los módulos). |
-| `src/common/` | Decoradores, enums, filtros, guards y utilidades compartidos entre módulos. `filters/` traduce los errores de Prisma a respuestas HTTP (409 dato repetido, 404 no existe, 400 relación inválida). |
+| `src/common/filters/` | Traduce los errores de Prisma a respuestas HTTP (409 dato repetido, 404 no existe, 400 relación inválida) para toda la API. |
 | `src/modules/app/` | Módulo raíz que une a todos los demás. |
+| `src/modules/prisma/` | Conexión con la base de datos (`PrismaService`, disponible en todos los módulos). |
 | `src/modules/auth/` | Registro de socios e inicio de sesión. |
 | `src/modules/users/` | Cuentas de usuario y roles. |
 | `src/modules/members/` | Alta, datos y estado de los socios. |
