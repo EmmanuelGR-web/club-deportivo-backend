@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateFileDto } from './dto/create-file.dto.js';
 import { UpdateFileDto } from './dto/update-file.dto.js';
@@ -7,7 +11,8 @@ import { UpdateFileDto } from './dto/update-file.dto.js';
 export class FilesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  crear(datosArchivo: CreateFileDto) {
+  async crear(datosArchivo: CreateFileDto) {
+    await this.validarDatos(datosArchivo);
     return this.prisma.file.create({ data: datosArchivo });
   }
 
@@ -23,11 +28,27 @@ export class FilesService {
     return archivo;
   }
 
-  actualizar(id: number, datosArchivo: UpdateFileDto) {
+  async actualizar(id: number, datosArchivo: UpdateFileDto) {
+    await this.obtenerUno(id);
+    await this.validarDatos(datosArchivo);
     return this.prisma.file.update({ where: { id }, data: datosArchivo });
   }
 
-  eliminar(id: number) {
+  async eliminar(id: number) {
+    await this.obtenerUno(id);
     return this.prisma.file.delete({ where: { id } });
+  }
+
+  private async validarDatos(datosArchivo: UpdateFileDto) {
+    if (datosArchivo.userId) {
+      const usuario = await this.prisma.user.findUnique({
+        where: { id: datosArchivo.userId },
+      });
+      if (!usuario) {
+        throw new BadRequestException(
+          `No existe el usuario ${datosArchivo.userId}.`,
+        );
+      }
+    }
   }
 }
