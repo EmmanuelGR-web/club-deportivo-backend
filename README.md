@@ -48,8 +48,6 @@ club-deportivo-backend/
 │   └── seed.ts
 ├── src/
 │   ├── main.ts
-│   ├── common/
-│   │   └── filters/
 │   └── modules/
 │       ├── app/
 │       ├── prisma/
@@ -76,7 +74,6 @@ Cada módulo se generó con `npx nest g resource modules/<nombre>` y tiene su `c
 | Carpeta | Contenido |
 | --- | --- |
 | `prisma/` | Esquema de la base de datos, migraciones y datos de prueba. |
-| `src/common/filters/` | Traduce los errores de Prisma a respuestas HTTP (409 dato repetido, 404 no existe, 400 relación inválida) para toda la API. |
 | `src/modules/app/` | Módulo raíz que une a todos los demás. |
 | `src/modules/prisma/` | Conexión con la base de datos (`PrismaService`, disponible en todos los módulos). |
 | `src/modules/auth/` | Registro de socios e inicio de sesión. |
@@ -171,6 +168,14 @@ Rutas extra:
 | `GET` | `/pagos/medios-pago` | Lista los medios de pago (Efectivo, Tarjeta, Transferencia, Billetera virtual, Depósito) |
 
 Los datos se validan con `class-validator`: si algo está mal, la API responde `400` con un mensaje por cada campo. Los campos que no están en el DTO se descartan. CORS está habilitado para que el front (repo 2) pueda consumir la API, y el cuerpo de los pedidos puede pesar hasta 10 MB (fotos y comprobantes en formato data URL). `GET /socios` trae cada socio con su usuario, su medio de pago y sus pagos.
+
+Además, cada service controla los datos antes de guardar y responde con el código que corresponde:
+
+| Código | Cuándo |
+| --- | --- |
+| `404` | El `id` de la URL no existe (al buscar, modificar o borrar) |
+| `409` | El dato ya existe: email, DNI, número de socio, nombre de disciplina, pago del mismo mes, o el usuario ya tiene ficha |
+| `400` | Se manda el `id` de algo que no existe (un usuario, un medio de pago…), o se quiere borrar un usuario que todavía tiene ficha de socio, de personal o noticias |
 
 ## Repositorios anteriores
 

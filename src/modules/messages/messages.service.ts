@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateMessageDto } from './dto/create-message.dto.js';
 import { UpdateMessageDto } from './dto/update-message.dto.js';
@@ -9,7 +13,8 @@ const datosRelacionados = { remitente: true, destinatario: true };
 export class MessagesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  crear(datosMensaje: CreateMessageDto) {
+  async crear(datosMensaje: CreateMessageDto) {
+    await this.validarDatos(datosMensaje);
     return this.prisma.message.create({
       data: datosMensaje,
       include: datosRelacionados,
@@ -34,7 +39,9 @@ export class MessagesService {
     return mensaje;
   }
 
-  actualizar(id: number, datosMensaje: UpdateMessageDto) {
+  async actualizar(id: number, datosMensaje: UpdateMessageDto) {
+    await this.obtenerUno(id);
+    await this.validarDatos(datosMensaje);
     return this.prisma.message.update({
       where: { id },
       data: datosMensaje,
@@ -42,7 +49,32 @@ export class MessagesService {
     });
   }
 
-  eliminar(id: number) {
+  async eliminar(id: number) {
+    await this.obtenerUno(id);
     return this.prisma.message.delete({ where: { id } });
+  }
+
+  private async validarDatos(datosMensaje: UpdateMessageDto) {
+    if (datosMensaje.remitenteId) {
+      const remitente = await this.prisma.user.findUnique({
+        where: { id: datosMensaje.remitenteId },
+      });
+      if (!remitente) {
+        throw new BadRequestException(
+          `No existe el usuario remitente ${datosMensaje.remitenteId}.`,
+        );
+      }
+    }
+
+    if (datosMensaje.destinatarioId) {
+      const destinatario = await this.prisma.user.findUnique({
+        where: { id: datosMensaje.destinatarioId },
+      });
+      if (!destinatario) {
+        throw new BadRequestException(
+          `No existe el usuario destinatario ${datosMensaje.destinatarioId}.`,
+        );
+      }
+    }
   }
 }
