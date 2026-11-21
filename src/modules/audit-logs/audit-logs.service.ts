@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateAuditLogDto } from './dto/create-audit-log.dto.js';
 import { UpdateAuditLogDto } from './dto/update-audit-log.dto.js';
@@ -9,7 +13,8 @@ const datosRelacionados = { user: true };
 export class AuditLogsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  crear(datosRegistro: CreateAuditLogDto) {
+  async crear(datosRegistro: CreateAuditLogDto) {
+    await this.validarDatos(datosRegistro);
     return this.prisma.auditLog.create({
       data: datosRegistro,
       include: datosRelacionados,
@@ -34,7 +39,9 @@ export class AuditLogsService {
     return registro;
   }
 
-  actualizar(id: number, datosRegistro: UpdateAuditLogDto) {
+  async actualizar(id: number, datosRegistro: UpdateAuditLogDto) {
+    await this.obtenerUno(id);
+    await this.validarDatos(datosRegistro);
     return this.prisma.auditLog.update({
       where: { id },
       data: datosRegistro,
@@ -42,7 +49,21 @@ export class AuditLogsService {
     });
   }
 
-  eliminar(id: number) {
+  async eliminar(id: number) {
+    await this.obtenerUno(id);
     return this.prisma.auditLog.delete({ where: { id } });
+  }
+
+  private async validarDatos(datosRegistro: UpdateAuditLogDto) {
+    if (datosRegistro.userId) {
+      const usuario = await this.prisma.user.findUnique({
+        where: { id: datosRegistro.userId },
+      });
+      if (!usuario) {
+        throw new BadRequestException(
+          `No existe el usuario ${datosRegistro.userId}.`,
+        );
+      }
+    }
   }
 }

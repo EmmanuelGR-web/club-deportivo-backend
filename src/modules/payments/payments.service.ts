@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreatePaymentDto } from './dto/create-payment.dto.js';
 import { UpdatePaymentDto } from './dto/update-payment.dto.js';
@@ -12,7 +17,9 @@ const datosRelacionados = {
 export class PaymentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  crear(datosPago: CreatePaymentDto) {
+  async crear(datosPago: CreatePaymentDto) {
+    await this.validarDatos(datosPago);
+    await this.validarPeriodo(datosPago.memberId, datosPago.periodo);
     return this.prisma.payment.create({
       data: datosPago,
       include: datosRelacionados,
@@ -41,7 +48,12 @@ export class PaymentsService {
     return pago;
   }
 
-  actualizar(id: number, datosPago: UpdatePaymentDto) {
+  async actualizar(id: number, datosPago: UpdatePaymentDto) {
+    const pago = await this.obtenerUno(id);
+    await this.validarDatos(datosPago);
+    const memberId = datosPago.memberId ?? pago.memberId;
+    const periodo = datosPago.periodo ?? pago.periodo;
+    await this.validarPeriodo(memberId, periodo, id);
     return this.prisma.payment.update({
       where: { id },
       data: datosPago,
@@ -49,7 +61,50 @@ export class PaymentsService {
     });
   }
 
-  eliminar(id: number) {
+  async eliminar(id: number) {
+    await this.obtenerUno(id);
     return this.prisma.payment.delete({ where: { id } });
+  }
+
+  private async validarDatos(datosPago: UpdatePaymentDto) {
+    if (datosPago.memberId) {
+      const socio = await this.prisma.member.findUnique({
+        where: { id: datosPago.memberId },
+      });
+      if (!socio) {
+        throw new BadRequestException(
+          `No existe el socio ${datosPago.memberId}.`,
+        );
+      }
+    }
+
+    if (datosPago.paymentMethodId) {
+      const medioPago = await this.prisma.paymentMethod.findUnique({
+        where: { id: datosPago.paymentMethodId },
+      });
+      if (!medioPago) {
+        throw new BadRequestException(
+          `No existe el medio de pago ${datosPago.paymentMethodId}.`,
+        );
+      }
+    }
+  }
+
+  private async validarPeriodo(
+    memberId: number,
+    periodo?: string | null,
+    id?: number,
+  ) {
+    if (!periodo) {
+      return;
+    }
+    const otroPago = await this.prisma.payment.findFirst({
+      where: { memberId, periodo },
+    });
+    if (otroPago && otroPago.id !== id) {
+      throw new ConflictException(
+        `El socio ya tiene un pago del período ${periodo}.`,
+      );
+    }
   }
 }

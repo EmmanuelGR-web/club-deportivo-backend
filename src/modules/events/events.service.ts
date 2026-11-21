@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateEventDto } from './dto/create-event.dto.js';
 import { UpdateEventDto } from './dto/update-event.dto.js';
@@ -9,7 +13,8 @@ const datosRelacionados = { discipline: true };
 export class EventsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  crear(datosEvento: CreateEventDto) {
+  async crear(datosEvento: CreateEventDto) {
+    await this.validarDatos(datosEvento);
     return this.prisma.event.create({
       data: datosEvento,
       include: datosRelacionados,
@@ -34,7 +39,9 @@ export class EventsService {
     return evento;
   }
 
-  actualizar(id: number, datosEvento: UpdateEventDto) {
+  async actualizar(id: number, datosEvento: UpdateEventDto) {
+    await this.obtenerUno(id);
+    await this.validarDatos(datosEvento);
     return this.prisma.event.update({
       where: { id },
       data: datosEvento,
@@ -42,7 +49,21 @@ export class EventsService {
     });
   }
 
-  eliminar(id: number) {
+  async eliminar(id: number) {
+    await this.obtenerUno(id);
     return this.prisma.event.delete({ where: { id } });
+  }
+
+  private async validarDatos(datosEvento: UpdateEventDto) {
+    if (datosEvento.disciplineId) {
+      const disciplina = await this.prisma.discipline.findUnique({
+        where: { id: datosEvento.disciplineId },
+      });
+      if (!disciplina) {
+        throw new BadRequestException(
+          `No existe la disciplina ${datosEvento.disciplineId}.`,
+        );
+      }
+    }
   }
 }

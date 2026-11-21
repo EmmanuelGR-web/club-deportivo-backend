@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   UnauthorizedException,
@@ -23,6 +25,34 @@ export class AuthService {
 
   async registrar(datosRegistro: RegistroAuthDto) {
     const { nombre, email, contrasena, ...datosSocio } = datosRegistro;
+
+    const usuarioConEseEmail = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+    if (usuarioConEseEmail) {
+      throw new ConflictException(
+        `Ya existe un usuario con el email ${email}.`,
+      );
+    }
+
+    const socioConEseDni = await this.prisma.member.findUnique({
+      where: { dni: datosSocio.dni },
+    });
+    if (socioConEseDni) {
+      throw new ConflictException(
+        `Ya existe un socio con el DNI ${datosSocio.dni}.`,
+      );
+    }
+
+    const medioPago = await this.prisma.paymentMethod.findUnique({
+      where: { id: datosSocio.paymentMethodId },
+    });
+    if (!medioPago) {
+      throw new BadRequestException(
+        `No existe el medio de pago ${datosSocio.paymentMethodId}.`,
+      );
+    }
+
     const ultimoSocio = await this.prisma.member.aggregate({
       _max: { numeroSocio: true },
     });
