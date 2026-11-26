@@ -1,5 +1,11 @@
 # Proyecto Club Deportivo
 
+## ConfiguraciÃ³n local
+
+Antes de iniciar, configurÃ¡ en `.env` las variables `PORT`, `DATABASE_URL`, `JWT_SECRET` y `GEMINI_API_KEY`.
+
+El mÃ³dulo de IA ofrece `POST /ia/pagos/:id/verificar-comprobante`. En Postman, usÃ¡ **Body â†’ form-data** con un campo `archivo` de tipo **File** y elegÃ­ una imagen JPG/PNG o un PDF de hasta 10 MB. El archivo se analiza en memoria y no se guarda; el resultado se guarda en `payments.verificacionIA`. La respuesta es orientativa y no aprueba ni rechaza el pago. Para probar, se usa un comprobante ficticio.
+
 El proyecto consiste en una pagina y aplicacion web para un club deportivo. En la App digital podremos gestionar: socios, pagos, noticias, disciplinas, eventos, personal y mensajería interna.
 
 Este repositorio es el **backend** (API REST). El frontend está en el [repo 2](https://github.com/EmmanuelGR-web/C-DEPORTIVO).
